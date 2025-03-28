@@ -1,47 +1,151 @@
-# :package_description
+# Model Context Protocol client implementation for PHP
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![Tests](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions/workflows/run-tests.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This package can be used as to scaffold a framework agnostic package. Follow these steps to get started:
+[![PHP from Packagist](https://img.shields.io/packagist/php-v/swisnl/mcp-client.svg)](https://packagist.org/packages/swisnl/mcp-client)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/swisnl/mcp-client.svg)](https://packagist.org/packages/swisnl/mcp-client)
+[![Software License](https://img.shields.io/packagist/l/swisnl/mcp-client.svg)](LICENSE.md)
+[![Buy us a tree](https://img.shields.io/badge/Treeware-%F0%9F%8C%B3-lightgreen.svg)](https://plant.treeware.earth/swisnl/mcp-client)
+[![Build Status](https://img.shields.io/github/checks-status/swisnl/mcp-client/master?label=tests)](https://github.com/swisnl/mcp-client/actions/workflows/tests.yml)
+[![Made by SWIS](https://img.shields.io/badge/%F0%9F%9A%80-made%20by%20SWIS-%230737A9.svg)](https://www.swis.nl)
 
-1. Press the "Use template" button at the top of this repo to create a new repo with the contents of this skeleton
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
-This is where your description should go. Try and limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+A PHP client library for interacting with Model Context Protocol (MCP) servers.
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require :vendor_slug/:package_slug
+composer require swisnl/mcp-client
 ```
 
-## Usage
+## Requirements
+
+- PHP 8.1 or higher
+- [ReactPHP](https://reactphp.org/) packages
+
+## Features
+
+- Multiple transport mechanisms:
+  - SSE (Server-Sent Events)
+  - Stdio (Standard input/output)
+  - Process (External process communication)
+- Promise-based API with ReactPHP
+- PSR-3 Logger interface support
+- Most of MCP protocol support
+
+## Basic Usage
+
+### SSE Transport
 
 ```php
-$skeleton = new VendorName\Skeleton();
-echo $skeleton->echoPhrase('Hello, VendorName!');
+use Swis\McpClient\Client;
+
+// Create client with SSE transporter
+$endpoint = 'https://your-mcp-server.com/sse';
+$client = Client::withSse($endpoint);
+
+// Connect to the server
+$client->connect(function($initResponse) {
+    echo "Connected to server: " . json_encode($initResponse['serverInfo']) . "\n";
+});
+
+// List available tools
+$tools = $client->listTools();
+foreach ($tools->getTools() as $tool) {
+    echo "- {$tool->getName()}: {$tool->getDescription()}\n";
+}
+
+// Call a tool
+$result = $client->callTool('echo', ['message' => 'Hello World!']);
+echo $result->getResult() . "\n";
 ```
 
-## Testing
+### Process Transport
+
+```php
+use Swis\McpClient\Client;
+
+// Create client with a process transporter
+[$client, $process] = Client::withProcess('/path/to/mcp-server/binary');
+
+// Connect to the server
+$client->connect();
+
+// Use the client...
+
+// Disconnect when done
+$client->disconnect();
+```
+
+## Use in combination with Agents SDK
+
+First, install Agents SDK
 
 ```bash
-composer test
+composer require swisnl/agents-sdk
+```
+
+```php
+use Swis\Agents\Agent;
+use Swis\Agents\Mcp\McpConnection;
+use Swis\McpClient\Client;
+use Swis\Agents\Orchestrator;
+
+$agent = new Agent(
+    name: 'Calculator Agent',
+    description: 'This Agent can perform arithmetic operations.',
+    mcpConnections: [
+        new MathMcpConnection(),
+    ]
+);
+
+$orchestrator = new Orchestrator($agent);
+echo $orchestrator
+        ->withUserInstruction('What\'s 5 + 5?')
+        ->run($agent)
+
+class MathMcpConnection extends McpConnection
+{
+    public function __construct()
+    {
+        [$client, $process] = Client::withProcess(
+            command: 'node ' . realpath(__DIR__ . '/node_modules/math-mcp/build/index.js'),
+        );
+
+        parent::__construct(
+            client: $client,
+            name: 'Math MCP',
+        );
+    }
+}
+```
+
+## Advanced Usage
+
+### Custom Transporter
+
+You can implement your own transporter by implementing the `TransporterInterface`:
+
+```php
+use Swis\McpClient\TransporterInterface;
+use Swis\McpClient\EventDispatcher;
+
+class CustomTransporter implements TransporterInterface
+{
+    // Implement required methods
+}
+
+// Create a client with your custom transporter
+$transporter = new CustomTransporter();
+$eventDispatcher = new EventDispatcher();
+$client = new Client($transporter, $eventDispatcher);
+```
+
+### Async Operations
+
+The client supports async operations using ReactPHP promises:
+
+```php
+$client->sendRequest(new ListToolsRequest())->then(...);
 ```
 
 ## Changelog
@@ -58,9 +162,10 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [Joris Meijer](https://github.com/jormeijer)
+- [Björn Brala](https://github.com/bbrala)
 - [All Contributors](../../contributors)
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This package is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
