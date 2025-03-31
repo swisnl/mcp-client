@@ -2,7 +2,6 @@
 
 namespace Swis\McpClient\Tests;
 
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
