@@ -19,7 +19,7 @@ composer require swisnl/mcp-client
 
 ## Requirements
 
-- PHP 8.1 or higher
+- PHP 8.2 or higher
 - [ReactPHP](https://reactphp.org/) packages
 
 ## Features
