@@ -2,15 +2,15 @@
 
 namespace Swis\McpClient\Tests;
 
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Swis\McpClient\Results\ListPromptsResult;
 
 class ClientIntegrationListPromptsTest extends IntegrationTestCase
 {
     /**
      * Test listing prompts
-     *
-     * @runInSeparateProcess
      */
+    #[RunInSeparateProcess]
     public function testListPrompts(): void
     {
         // Get available prompts

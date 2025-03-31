@@ -15,18 +15,18 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
+        "psr/event-dispatcher": "^1.0",
         "psr/log": "^3.0",
-        "react/stream": "^1.4",
+        "react/async": "^4.3",
         "react/event-loop": "^1.5",
         "react/http": "^1.11",
-        "react/async": "^4.3",
-        "psr/event-dispatcher": "^1.0"
+        "react/stream": "^1.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.3.2",
+        "friendsofphp/php-cs-fixer": "^3.74",
         "phpstan/phpstan": "^2.1",
-        "friendsofphp/php-cs-fixer": "^3.21.1"
+        "phpunit/phpunit": "^12.0"
     },
     "autoload": {
         "psr-4": {

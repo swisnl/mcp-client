@@ -2,6 +2,7 @@
 
 namespace Swis\McpClient\Tests;
 
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
 use Swis\McpClient\Client;
@@ -22,6 +23,7 @@ class StdioTransporterIntegrationTest extends TestCase
      * of the client configuration. The actual communication flow is tested
      * in a manual test in the examples directory.
      */
+    #[RunInSeparateProcess]
     public function testClientCreation(): void
     {
         // Create a logger that stores messages
@@ -90,6 +92,7 @@ class StdioTransporterIntegrationTest extends TestCase
     /**
      * Test protocol version setting
      */
+    #[RunInSeparateProcess]
     public function testProtocolVersion(): void
     {
         $client = Client::withStdio();

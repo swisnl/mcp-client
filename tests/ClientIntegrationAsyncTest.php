@@ -2,6 +2,7 @@
 
 namespace Swis\McpClient\Tests;
 
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use React\EventLoop\Loop;
 use Swis\McpClient\Requests\ListPromptsRequest;
 use Swis\McpClient\Requests\ListResourcesRequest;
@@ -11,9 +12,8 @@ class ClientIntegrationAsyncTest extends IntegrationTestCase
 {
     /**
      * Test asynchronous requests
-     *
-     * @runInSeparateProcess
      */
+    #[RunInSeparateProcess]
     public function testAsyncRequests(): void
     {
         // Create a deferred that will be resolved when all callbacks have been invoked

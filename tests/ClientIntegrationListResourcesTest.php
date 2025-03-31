@@ -2,15 +2,15 @@
 
 namespace Swis\McpClient\Tests;
 
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Swis\McpClient\Results\ListResourcesResult;
 
 class ClientIntegrationListResourcesTest extends IntegrationTestCase
 {
     /**
      * Test listing resources
-     *
-     * @runInSeparateProcess
      */
+    #[RunInSeparateProcess]
     public function testListResources(): void
     {
         // Get available resources

@@ -2,6 +2,7 @@
 
 namespace Swis\McpClient\Tests;
 
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
@@ -85,14 +86,15 @@ abstract class IntegrationTestCase extends TestCase
         // Get the loop from the client before unset
         $loop = $this->client->getLoop();
 
-        // Clear state
-        unset($this->client);
-        $this->logger->clear();
-
         // Stop the test's isolated loop (this won't affect other tests since each has its own loop)
         if ($loop) {
             $loop->stop();
         }
+
+        // Clear state
+        unset($this->client);
+        $this->logger->clear();
+
 
         parent::tearDown();
     }

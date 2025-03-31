@@ -2,6 +2,7 @@
 
 namespace Swis\McpClient\Tests\Transporters;
 
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Swis\McpClient\Tests\IntegrationTestCase;
 
 /**
@@ -11,9 +12,8 @@ class StdioTransporterTest extends IntegrationTestCase
 {
     /**
      * Test the full client flow with a process-based StdioTransporter
-     *
-     * @runInSeparateProcess
      */
+    #[RunInSeparateProcess]
     public function testClientFlowWithProcess(): void
     {
         // Test ping request

@@ -2,6 +2,7 @@
 
 namespace Swis\McpClient\Tests;
 
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Swis\McpClient\Requests\CallToolRequest;
 
 /**
@@ -12,6 +13,7 @@ class ClientIntegrationToolCallTest extends IntegrationTestCase
     /**
      * Test calling the echo tool
      */
+    #[RunInSeparateProcess]
     public function testEchoTool(): void
     {
         // Create a tool call request
@@ -29,9 +31,8 @@ class ClientIntegrationToolCallTest extends IntegrationTestCase
 
     /**
      * Test calling the add tool - in a separate process to avoid loop issues
-     *
-     * @runInSeparateProcess
      */
+    #[RunInSeparateProcess]
     public function testAddTool(): void
     {
         // Create a tool call request
@@ -49,9 +50,8 @@ class ClientIntegrationToolCallTest extends IntegrationTestCase
 
     /**
      * Test calling a non-existent tool - in a separate process to avoid loop issues
-     *
-     * @runInSeparateProcess
      */
+    #[RunInSeparateProcess]
     public function testNonExistentTool(): void
     {
         // Create a tool call request for a non-existent tool

@@ -2,13 +2,14 @@
 
 namespace Swis\McpClient\Tests;
 
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+
 class ClientIntegrationListToolsTest extends IntegrationTestCase
 {
     /**
      * Test listing tools
-     *
-     * @runInSeparateProcess
      */
+    #[RunInSeparateProcess]
     public function testListTools(): void
     {
         // Get available tools
