@@ -5,7 +5,6 @@ namespace Swis\McpClient;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-use Swis\McpClient\Results\ResultInterface;
 use function React\Async\await;
 
 use React\EventLoop\Loop;
@@ -18,6 +17,7 @@ use Swis\McpClient\Requests\InitializedNotificationRequest;
 use Swis\McpClient\Requests\InitializeRequest;
 use Swis\McpClient\Requests\RequestInterface;
 use Swis\McpClient\Results\InitializeResult;
+use Swis\McpClient\Results\ResultInterface;
 use Swis\McpClient\Transporters\RequiresConnectionNotification;
 use Swis\McpClient\Transporters\SseTransporter;
 use Swis\McpClient\Transporters\StdioTransporter;
