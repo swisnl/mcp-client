@@ -4,7 +4,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/swisnl/mcp-client.svg)](https://packagist.org/packages/swisnl/mcp-client)
 [![Software License](https://img.shields.io/packagist/l/swisnl/mcp-client.svg)](LICENSE.md)
 [![Buy us a tree](https://img.shields.io/badge/Treeware-%F0%9F%8C%B3-lightgreen.svg)](https://plant.treeware.earth/swisnl/mcp-client)
-[![Build Status](https://img.shields.io/github/checks-status/swisnl/mcp-client/master?label=tests)](https://github.com/swisnl/mcp-client/actions/workflows/tests.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/swisnl/mcp-client/run-tests.yml?label=tests&branch=master)](https://github.com/swisnl/mcp-client/actions/workflows/run-tests.yml)
 [![Made by SWIS](https://img.shields.io/badge/%F0%9F%9A%80-made%20by%20SWIS-%230737A9.svg)](https://www.swis.nl)
 
 A PHP client library for interacting with Model Context Protocol (MCP) servers.
