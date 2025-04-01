@@ -86,7 +86,25 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/Client.php',
 ];
 $ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\Client\\:\\:sendRequestAsync\\(\\) should return React\\\\Promise\\\\PromiseInterface\\<Swis\\\\McpClient\\\\Results\\\\ResultInterface\\> but returns React\\\\Promise\\\\PromiseInterface\\<mixed\\>\\.$#',
+	'identifier' => 'return.type',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Client.php',
+];
+$ignoreErrors[] = [
 	'message' => '#^Parameter \\#1 \\$inputStream of class Swis\\\\McpClient\\\\Transporters\\\\StdioTransporter constructor expects resource\\|string\\|null, resource\\|false given\\.$#',
+	'identifier' => 'argument.type',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Client.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Parameter \\#1 \\$onFulfilled of method React\\\\Promise\\\\PromiseInterface\\<Swis\\\\McpClient\\\\Results\\\\ResultInterface\\>\\:\\:then\\(\\) expects \\(callable\\(Swis\\\\McpClient\\\\Results\\\\ResultInterface\\)\\: \\(React\\\\Promise\\\\PromiseInterface\\<void\\>\\|void\\)\\)\\|null, Closure\\(Swis\\\\McpClient\\\\Results\\\\InitializeResult\\)\\: void given\\.$#',
+	'identifier' => 'argument.type',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Client.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Parameter \\#1 \\$onFulfilled of method React\\\\Promise\\\\PromiseInterface\\<void\\>\\:\\:then\\(\\) expects \\(callable\\(null\\)\\: \\(array\\|bool\\|Exception\\|float\\|int\\|React\\\\Promise\\\\PromiseInterface\\<array\\|bool\\|Exception\\|float\\|int\\|string\\>\\|string\\)\\)\\|null, Closure\\(\\)\\: \\(React\\\\Promise\\\\PromiseInterface\\<array\\|bool\\|Exception\\|float\\|int\\|string\\>\\|null\\) given\\.$#',
 	'identifier' => 'argument.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Client.php',
@@ -460,6 +478,12 @@ $ignoreErrors[] = [
 $ignoreErrors[] = [
 	'message' => '#^Parameter \\#2 \\$env of static method Swis\\\\McpClient\\\\Factories\\\\ProcessFactory\\:\\:createTransporterForProcess\\(\\) expects array\\<string, string\\>, array\\<string, bool\\|float\\|int\\|string\\> given\\.$#',
 	'identifier' => 'argument.type',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Transporters/StdioTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Property Swis\\\\McpClient\\\\Transporters\\\\StdioTransporter\\:\\:\\$errorResource \\(resource\\|string\\|null\\) does not accept resource\\|false\\.$#',
+	'identifier' => 'assign.propertyType',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Transporters/StdioTransporter.php',
 ];

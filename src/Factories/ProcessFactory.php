@@ -4,7 +4,6 @@ namespace Swis\McpClient\Factories;
 
 use Psr\Log\LoggerInterface;
 use React\EventLoop\LoopInterface;
-use React\Stream\ReadableResourceStream;
 use Swis\McpClient\Exceptions\ProcessStartException;
 use Swis\McpClient\Transporters\StdioTransporter;
 
@@ -34,7 +33,7 @@ class ProcessFactory
         ?LoopInterface $loop = null
     ): array {
         // Create a start process function that we can reuse for auto-healing
-        $startProcess = function () use ($command, $env, $cwd, $logger, $loop) {
+        $startProcess = function () use ($command, $env, $cwd) {
             $descriptorSpec = [
                 0 => ['pipe', 'r'],  // stdin
                 1 => ['pipe', 'w'],  // stdout
@@ -42,7 +41,7 @@ class ProcessFactory
             ];
 
             // Merge environment variables
-            $processEnv = array_merge($_ENV, $env);
+            $processEnv = array_merge(getenv(), $env);
 
             // Start the process
             $process = proc_open($command, $descriptorSpec, $pipes, $cwd, $processEnv);
@@ -56,25 +55,6 @@ class ProcessFactory
             stream_set_blocking($pipes[1], false);
             stream_set_blocking($pipes[2], false);
 
-            // Setup stderr handling if there's a logger
-            if ($logger) {
-                $stderrStream = new ReadableResourceStream($pipes[2], $loop);
-
-                $stderrStream->on('data', function (string $data) use ($logger, $command) {
-                    $logger->warning('Process stderr output', [
-                        'command' => $command,
-                        'stderr' => trim($data),
-                    ]);
-                });
-
-                $stderrStream->on('error', function (\Throwable $e) use ($logger, $command) {
-                    $logger->error('Process stderr error', [
-                        'command' => $command,
-                        'error' => $e->getMessage(),
-                    ]);
-                });
-            }
-
             return [$process, $pipes];
         };
 
@@ -87,7 +67,7 @@ class ProcessFactory
         //
         // pipes[0] is the process's stdin (we write to it)
         // pipes[1] is the process's stdout (we read from it)
-        $transporter = new StdioTransporter($pipes[1], $pipes[0], false, $logger, $loop);
+        $transporter = new StdioTransporter($pipes[1], $pipes[0], false, $logger, $loop, $pipes[2]);
 
         // Register auto-restart callback if enabled
         if ($autoRestartAmount) {
@@ -121,7 +101,7 @@ class ProcessFactory
                     $process = $newProcess;
 
                     // Return the new streams
-                    return [$newPipes[1], $newPipes[0]];
+                    return [$newPipes[1], $newPipes[0], $newPipes[2]];
                 } catch (\Throwable $e) {
                     $logger?->error('Failed to restart process: ' . $e->getMessage());
 

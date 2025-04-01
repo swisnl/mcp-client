@@ -240,7 +240,17 @@ trait ClientRequestTrait
         } catch (\AssertionError $e) {
             if (str_contains($e->getMessage(), 'is_callable($ret)')) {
                 if ($this->transporter instanceof StdioTransporter) {
-                    throw new ConnectionAbortedEarlyException('Connection aborted early. Mostly this happens if the process is killed before the connection is established. Check for any errors in your command string.', 0, $e);
+                    $errorBag = $this->transporter->getErrorBag();
+
+                    $error = 'Connection aborted early. Mostly this happens if the process is killed before the connection is established. Check for any errors in your command string.';
+                    if (count($errorBag) > 0) {
+                        $error .= "\n\nLatest errors:\n" . implode("\n", array_slice($errorBag, -3));
+                    }
+
+                    $connectionAbortedEarlyException = new ConnectionAbortedEarlyException($error, 0, $e);
+                    $connectionAbortedEarlyException->setErrorBag($errorBag);
+
+                    throw $connectionAbortedEarlyException;
                 }
 
                 throw new ConnectionAbortedEarlyException('Connection aborted early. Check your MCP server URL and settings.', 0, $e);

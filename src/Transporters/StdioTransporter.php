@@ -37,6 +37,11 @@ class StdioTransporter extends AbstractTransporter
     private $outputResource = null;
 
     /**
+     * @var resource|string|null Error stream resource
+     */
+    private $errorResource = null;
+
+    /**
      * @var bool Whether to close streams on disconnect
      */
     private bool $shouldCloseStreams = true;
@@ -52,6 +57,11 @@ class StdioTransporter extends AbstractTransporter
     private ?WritableResourceStream $writableStream = null;
 
     /**
+     * @var ReadableResourceStream|null Error stream
+     */
+    private ?ReadableResourceStream $errorStream = null;
+
+    /**
      * @var string Buffer for incoming data
      */
     private string $buffer = '';
@@ -62,6 +72,11 @@ class StdioTransporter extends AbstractTransporter
     private array $reconnectCallbacks = [];
 
     /**
+     * @var array<string> Error bag for registering errors from the error stream
+     */
+    private array $errorBag = [];
+
+    /**
      * Constructor
      *
      * @param resource|string|null $inputStream Input stream resource or string identifier (defaults to null)
@@ -69,18 +84,21 @@ class StdioTransporter extends AbstractTransporter
      * @param bool $shouldCloseStreams Whether to close the streams on disconnect
      * @param LoggerInterface|null $logger Optional logger
      * @param LoopInterface|null $loop Optional event loop
+     * @param resource|string|null $errorStream Optional error stream resource for catching possible errors before the connection gets closed
      */
     public function __construct(
         $inputStream = null,
         $outputStream = null,
         bool $shouldCloseStreams = true,
         ?LoggerInterface $logger = null,
-        ?LoopInterface $loop = null
+        ?LoopInterface $loop = null,
+        $errorStream = null,
     ) {
         parent::__construct($logger, $loop);
 
         $this->inputResource = $inputStream;
         $this->outputResource = $outputStream;
+        $this->errorResource = $errorStream;
         $this->shouldCloseStreams = $shouldCloseStreams;
     }
 
@@ -117,6 +135,7 @@ class StdioTransporter extends AbstractTransporter
         $this->writableStream = new WritableResourceStream($this->outputResource, $this->loop);
 
         $this->setupListeners();
+        $this->setupErrorListening();
 
         $this->connected = true;
         $this->logger->debug('Connected to MCP server via I/O streams');
@@ -155,9 +174,11 @@ class StdioTransporter extends AbstractTransporter
         // Close ReactPHP streams
         $this->readableStream?->close();
         $this->writableStream?->close();
+        $this->errorStream?->close();
 
         $this->readableStream = null;
         $this->writableStream = null;
+        $this->errorStream = null;
 
         // Close resource streams if configured to do so
         if ($this->shouldCloseStreams) {
@@ -167,6 +188,10 @@ class StdioTransporter extends AbstractTransporter
 
             if (is_resource($this->outputResource)) {
                 fclose($this->outputResource);
+            }
+
+            if (is_resource($this->errorResource)) {
+                fclose($this->errorResource);
             }
         }
 
@@ -217,6 +242,16 @@ class StdioTransporter extends AbstractTransporter
     }
 
     /**
+     * Get the error bag
+     *
+     * @return array<string> The error bag
+     */
+    public function getErrorBag(): array
+    {
+        return $this->errorBag;
+    }
+
+    /**
      * Setup event listeners for the input/output streams
      */
     private function setupListeners(): void
@@ -254,6 +289,42 @@ class StdioTransporter extends AbstractTransporter
         $writableStream->on('error', function (\Throwable $e) {
             $this->logger->error('Error in output stream: ' . $e->getMessage());
         });
+    }
+
+    /**
+     * Setup event listeners for the error stream
+     */
+    private function setupErrorListening(): void
+    {
+        if (is_string($this->errorResource)) {
+            $this->errorResource = fopen($this->errorResource, 'r');
+        }
+
+        if (! is_resource($this->errorResource)) {
+            return;
+        }
+
+        stream_set_blocking($this->errorResource, false);
+
+        // Create ReactPHP error stream
+        $this->errorStream = new ReadableResourceStream($this->errorResource, $this->loop);
+
+        $this->errorStream->on('data', function (string $data) {
+            $this->errorBag[] = $data;
+
+            $this->logger->warning('Process stderr output', [
+                'stderr' => $data,
+            ]);
+        });
+
+        $this->errorStream->on('error', function (\Throwable $e) {
+            $this->errorBag[] = $e->getMessage();
+
+            $this->logger->error('Process stderr error', [
+                'error' => $e->getMessage(),
+            ]);
+        });
+
     }
 
     /**
@@ -298,18 +369,27 @@ class StdioTransporter extends AbstractTransporter
                     continue;
                 }
 
-                if (! is_array($streams) || count($streams) !== 2) {
+                if (! is_array($streams) || count($streams) < 2) {
                     $this->logger->debug('Invalid reconnect callback result, expected array with input and output streams');
 
                     continue;
                 }
 
                 [$inputStream, $outputStream] = $streams;
+
                 assert(is_resource($inputStream) || is_string($inputStream));
                 assert(is_resource($outputStream) || is_string($outputStream));
 
                 // Set the new streams and reconnect
                 $this->setStreams($inputStream, $outputStream, $this->shouldCloseStreams);
+
+                if (count($streams) === 3) {
+                    $errorStream = $streams[2];
+                    assert(is_resource($errorStream) || is_string($errorStream));
+                    $this->errorResource = $errorStream;
+                    $this->setupErrorListening();
+                }
+
                 $this->connect();
 
                 $this->logger->debug('Successfully auto-healed connection with new streams');

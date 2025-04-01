@@ -5,16 +5,20 @@ namespace Swis\McpClient;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+use Swis\McpClient\Results\ResultInterface;
 use function React\Async\await;
 
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
+use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 use Swis\McpClient\Exceptions\ConnectionFailedException;
 use Swis\McpClient\Factories\ProcessFactory;
 use Swis\McpClient\Requests\InitializedNotificationRequest;
 use Swis\McpClient\Requests\InitializeRequest;
 use Swis\McpClient\Requests\RequestInterface;
+use Swis\McpClient\Results\InitializeResult;
+use Swis\McpClient\Transporters\RequiresConnectionNotification;
 use Swis\McpClient\Transporters\SseTransporter;
 use Swis\McpClient\Transporters\StdioTransporter;
 
@@ -153,13 +157,16 @@ class Client
 
         try {
             $serverInfo = [];
+
             await(
                 $this
-                ->sendRequest($initRequest)
-                ->then(fn ($result) => $serverInfo = $result)
+                ->sendRequestAsync($initRequest)
+                ->then(function (InitializeResult $result) use (&$serverInfo) {
+                    $serverInfo = $result->toArray();
+                })
                 ->then(fn () => register_shutdown_function(fn () => $this->loop?->stop()))
                 ->then(fn () => register_shutdown_function([$this, 'disconnect']))
-                ->then(fn () => $this->sendRequest(new InitializedNotificationRequest($meta)))
+                ->then(fn () => $this->transporter instanceof RequiresConnectionNotification ? $this->sendRequest(new InitializedNotificationRequest($meta)) : null)
             );
 
             if ($initCallback !== null) {
@@ -215,6 +222,24 @@ class Client
         $this->sentRequests[$requestId] = $request;
 
         return $this->transporter->sendRequest($request);
+    }
+
+    /**
+     * Send a request to the MCP server and return a promise.
+     * The promise will resolve when the server sends a response.
+     *
+     * @param RequestInterface $request The request to send
+     * @return PromiseInterface<ResultInterface> A promise that resolves when the server sends a response
+     */
+    public function sendRequestAsync(RequestInterface $request): PromiseInterface
+    {
+        $deferred = new Deferred();
+
+        $this->sendRequest($request, function ($response) use ($deferred) {
+            $deferred->resolve($response);
+        });
+
+        return $deferred->promise();
     }
 
     /**

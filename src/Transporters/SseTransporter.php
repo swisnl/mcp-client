@@ -27,7 +27,7 @@ use Swis\McpClient\Requests\RequestInterface;
  * This transporter is non-blocking, allowing for simultaneous reading and writing.
  * Uses ReactPHP for HTTP requests and event handling.
  */
-class SseTransporter extends AbstractTransporter
+class SseTransporter extends AbstractTransporter implements RequiresConnectionNotification
 {
     /**
      * @var string The initial SSE endpoint URL
