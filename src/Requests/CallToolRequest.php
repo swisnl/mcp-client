@@ -27,8 +27,10 @@ class CallToolRequest extends BaseRequest
             'name' => $this->name,
         ];
 
-        if ($this->arguments !== null) {
+        if ($this->arguments !== null && count($this->arguments) > 0) {
             $params['arguments'] = $this->arguments;
+        } else {
+            $params['arguments'] = new \stdClass();
         }
 
         return $params;
