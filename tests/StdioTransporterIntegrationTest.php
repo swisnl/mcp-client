@@ -98,11 +98,11 @@ class StdioTransporterIntegrationTest extends TestCase
         $client = Client::withStdio();
 
         // Default protocol version
-        $this->assertEquals('2024-11-05', $this->getObjectProperty($client, 'protocolVersion'));
+        $this->assertEquals('2025-03-26', $this->getObjectProperty($client, 'protocolVersion'));
 
         // Update protocol version
-        $client->withProtocolVersion('2023-10-01');
-        $this->assertEquals('2023-10-01', $this->getObjectProperty($client, 'protocolVersion'));
+        $client->withProtocolVersion('2024-11-05');
+        $this->assertEquals('2024-11-05', $this->getObjectProperty($client, 'protocolVersion'));
     }
 
     /**

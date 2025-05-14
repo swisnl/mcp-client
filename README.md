@@ -28,9 +28,11 @@ composer require swisnl/mcp-client
   - SSE (Server-Sent Events)
   - Stdio (Standard input/output)
   - Process (External process communication)
+  - StreamableHttp (HTTP with session management)
 - Promise-based API with ReactPHP
 - PSR-3 Logger interface support
-- Most of MCP protocol support
+- Most of MCP protocol support (2025-03-26)
+- Tool annotation support
 
 ## Basic Usage
 
@@ -52,6 +54,12 @@ $client->connect(function($initResponse) {
 $tools = $client->listTools();
 foreach ($tools->getTools() as $tool) {
     echo "- {$tool->getName()}: {$tool->getDescription()}\n";
+    
+    // Access tool annotations if available
+    if ($annotations = $tool->getAnnotations()) {
+        echo "  * Read-only: " . ($annotations->getReadOnlyHint() ? 'Yes' : 'No') . "\n";
+        echo "  * Title: " . ($annotations->getTitle() ?? 'N/A') . "\n";
+    }
 }
 
 // Call a tool
@@ -69,6 +77,26 @@ use Swis\McpClient\Client;
 
 // Connect to the server
 $client->connect();
+
+// Use the client...
+
+// Disconnect when done
+$client->disconnect();
+```
+
+### StreamableHttp Transport
+
+```php
+use Swis\McpClient\Client;
+
+// Create client with StreamableHttp transporter
+$endpoint = 'https://your-mcp-server.com/';
+$client = Client::withStreamableHttp($endpoint);
+
+// Connect to the server
+$client->connect();
+
+// The transporter will automatically manage session IDs from the Mcp-Session-Id header
 
 // Use the client...
 

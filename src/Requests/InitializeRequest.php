@@ -15,7 +15,7 @@ class InitializeRequest extends BaseRequest
     public function __construct(
         protected array $capabilities,
         protected array $clientInfo,
-        protected string $protocolVersion = '2024-11-05',
+        protected string $protocolVersion = '2025-03-26',
     ) {
         $this->method = 'initialize';
 

@@ -8,6 +8,30 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/AbstractTransporter.php',
 ];
 $ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\AbstractTransporter\\:\\:initializeConnection\\(\\) has parameter \\$capabilities with no value type specified in iterable type array\\.$#',
+	'identifier' => 'missingType.iterableValue',
+	'count' => 1,
+	'path' => __DIR__ . '/src/AbstractTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\AbstractTransporter\\:\\:initializeConnection\\(\\) has parameter \\$clientInfo with no value type specified in iterable type array\\.$#',
+	'identifier' => 'missingType.iterableValue',
+	'count' => 1,
+	'path' => __DIR__ . '/src/AbstractTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\AbstractTransporter\\:\\:initializeConnection\\(\\) should return array\\<string, bool\\|float\\|int\\|string\\> but returns array\\<mixed, mixed\\>\\.$#',
+	'identifier' => 'return.type',
+	'count' => 1,
+	'path' => __DIR__ . '/src/AbstractTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Using nullsafe method call on non\\-nullable type React\\\\EventLoop\\\\LoopInterface\\. Use \\-\\> instead\\.$#',
+	'identifier' => 'nullsafe.neverNull',
+	'count' => 1,
+	'path' => __DIR__ . '/src/AbstractTransporter.php',
+];
+$ignoreErrors[] = [
 	'message' => '#^Cannot access offset \'id\' on array\\|bool\\|Exception\\|float\\|int\\|string\\.$#',
 	'identifier' => 'offsetAccess.nonOffsetAccessible',
 	'count' => 1,
@@ -98,25 +122,7 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/Client.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Parameter \\#1 \\$onFulfilled of method React\\\\Promise\\\\PromiseInterface\\<Swis\\\\McpClient\\\\Results\\\\ResultInterface\\>\\:\\:then\\(\\) expects \\(callable\\(Swis\\\\McpClient\\\\Results\\\\ResultInterface\\)\\: \\(React\\\\Promise\\\\PromiseInterface\\<void\\>\\|void\\)\\)\\|null, Closure\\(Swis\\\\McpClient\\\\Results\\\\InitializeResult\\)\\: void given\\.$#',
-	'identifier' => 'argument.type',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Client.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^Parameter \\#1 \\$onFulfilled of method React\\\\Promise\\\\PromiseInterface\\<void\\>\\:\\:then\\(\\) expects \\(callable\\(null\\)\\: \\(array\\|bool\\|Exception\\|float\\|int\\|React\\\\Promise\\\\PromiseInterface\\<array\\|bool\\|Exception\\|float\\|int\\|string\\>\\|string\\)\\)\\|null, Closure\\(\\)\\: \\(React\\\\Promise\\\\PromiseInterface\\<array\\|bool\\|Exception\\|float\\|int\\|string\\>\\|null\\) given\\.$#',
-	'identifier' => 'argument.type',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Client.php',
-];
-$ignoreErrors[] = [
 	'message' => '#^Parameter \\#2 \\$outputStream of class Swis\\\\McpClient\\\\Transporters\\\\StdioTransporter constructor expects resource\\|string\\|null, resource\\|false given\\.$#',
-	'identifier' => 'argument.type',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Client.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^Parameter \\$capabilities of class Swis\\\\McpClient\\\\Requests\\\\InitializeRequest constructor expects array\\<string, array\\<string, bool\\|float\\|int\\|string\\>\\>, array\\<string, bool\\|float\\|int\\|string\\> given\\.$#',
 	'identifier' => 'argument.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Client.php',
@@ -404,19 +410,19 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/Results/ListResourcesResult.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\ListToolsResult\\:\\:toArray\\(\\) should return array\\{tools\\: array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string\\}, nextCursor\\?\\: string\\|null, _meta\\?\\: array\\{\\}\\} but returns array\\{tools\\: array\\<array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string\\}\\>, nextCursor\\?\\: string\\}\\.$#',
+	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\ListToolsResult\\:\\:toArray\\(\\) should return array\\{tools\\: array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string, annotations\\?\\: array\\<string, mixed\\>\\}, nextCursor\\?\\: string\\|null, _meta\\?\\: array\\{\\}\\} but returns array\\{tools\\: array\\<array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string, annotations\\?\\: array\\<string, mixed\\>\\}\\>, nextCursor\\?\\: string\\}\\.$#',
 	'identifier' => 'return.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Results/ListToolsResult.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}\\|string\\)\\: mixed\\)\\|null, Closure\\(array\\)\\: Swis\\\\McpClient\\\\Schema\\\\Tool given\\.$#',
+	'message' => '#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(array\\<string, mixed\\>\\|string\\)\\: mixed\\)\\|null, Closure\\(array\\)\\: Swis\\\\McpClient\\\\Schema\\\\Tool given\\.$#',
 	'identifier' => 'argument.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Results/ListToolsResult.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Parameter \\#1 \\$data of static method Swis\\\\McpClient\\\\Schema\\\\Tool\\:\\:fromArray\\(\\) expects array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string\\}, array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\} given\\.$#',
+	'message' => '#^Parameter \\#1 \\$data of static method Swis\\\\McpClient\\\\Schema\\\\Tool\\:\\:fromArray\\(\\) expects array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string, annotations\\?\\: array\\<string, mixed\\>\\}, array\\<string, mixed\\> given\\.$#',
 	'identifier' => 'argument.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Results/ListToolsResult.php',
@@ -446,8 +452,32 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/Results/ResultInterface.php',
 ];
 $ignoreErrors[] = [
+	'message' => '#^Parameter \\#1 \\$data of static method Swis\\\\McpClient\\\\Schema\\\\ToolAnnotation\\:\\:fromArray\\(\\) expects array\\{destructiveHint\\?\\: bool, idempotentHint\\?\\: bool, openWorldHint\\?\\: bool, readOnlyHint\\?\\: bool, title\\?\\: string\\}, array\\<string, mixed\\> given\\.$#',
+	'identifier' => 'argument.type',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Schema/Tool.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\TransporterInterface\\:\\:initializeConnection\\(\\) has parameter \\$capabilities with no value type specified in iterable type array\\.$#',
+	'identifier' => 'missingType.iterableValue',
+	'count' => 1,
+	'path' => __DIR__ . '/src/TransporterInterface.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\TransporterInterface\\:\\:initializeConnection\\(\\) has parameter \\$clientInfo with no value type specified in iterable type array\\.$#',
+	'identifier' => 'missingType.iterableValue',
+	'count' => 1,
+	'path' => __DIR__ . '/src/TransporterInterface.php',
+];
+$ignoreErrors[] = [
 	'message' => '#^Cannot call method promise\\(\\) on React\\\\Promise\\\\Deferred\\<mixed\\>\\|null\\.$#',
 	'identifier' => 'method.nonObject',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Transporters/SseTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\Transporters\\\\SseTransporter\\:\\:doSendRequest\\(\\) return type with generic interface React\\\\Promise\\\\PromiseInterface does not specify its types\\: T$#',
+	'identifier' => 'missingType.generics',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Transporters/SseTransporter.php',
 ];
@@ -498,6 +528,36 @@ $ignoreErrors[] = [
 	'identifier' => 'assign.propertyType',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Transporters/StdioTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\Transporters\\\\StreamableHttpTransporter\\:\\:initializeConnection\\(\\) has parameter \\$capabilities with no value type specified in iterable type array\\.$#',
+	'identifier' => 'missingType.iterableValue',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Transporters/StreamableHttpTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\Transporters\\\\StreamableHttpTransporter\\:\\:initializeConnection\\(\\) has parameter \\$clientInfo with no value type specified in iterable type array\\.$#',
+	'identifier' => 'missingType.iterableValue',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Transporters/StreamableHttpTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Method Swis\\\\McpClient\\\\Transporters\\\\StreamableHttpTransporter\\:\\:initializeConnection\\(\\) should return array\\<string, bool\\|float\\|int\\|string\\> but returns mixed\\.$#',
+	'identifier' => 'return.type',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Transporters/StreamableHttpTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Parameter \\#1 \\$onFulfilled of method React\\\\Promise\\\\PromiseInterface\\<mixed\\>\\:\\:then\\(\\) expects \\(callable\\(mixed\\)\\: \\(Psr\\\\Http\\\\Message\\\\ResponseInterface\\|React\\\\Promise\\\\PromiseInterface\\<Psr\\\\Http\\\\Message\\\\ResponseInterface\\>\\)\\)\\|null, Closure\\(Psr\\\\Http\\\\Message\\\\ResponseInterface\\)\\: Psr\\\\Http\\\\Message\\\\ResponseInterface given\\.$#',
+	'identifier' => 'argument.type',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Transporters/StreamableHttpTransporter.php',
+];
+$ignoreErrors[] = [
+	'message' => '#^Parameter \\#1 \\$onFulfilled of method React\\\\Promise\\\\PromiseInterface\\<mixed\\>\\:\\:then\\(\\) expects \\(callable\\(mixed\\)\\: \\(React\\\\Promise\\\\PromiseInterface\\<void\\>\\|void\\)\\)\\|null, Closure\\(Psr\\\\Http\\\\Message\\\\ResponseInterface\\)\\: void given\\.$#',
+	'identifier' => 'argument.type',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Transporters/StreamableHttpTransporter.php',
 ];
 
 return ['parameters' => ['ignoreErrors' => $ignoreErrors]];

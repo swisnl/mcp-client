@@ -5,22 +5,18 @@ namespace Swis\McpClient;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-use Swis\McpClient\Results\ResultInterface;
 use function React\Async\await;
 
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
-use Swis\McpClient\Exceptions\ConnectionFailedException;
 use Swis\McpClient\Factories\ProcessFactory;
-use Swis\McpClient\Requests\InitializedNotificationRequest;
-use Swis\McpClient\Requests\InitializeRequest;
 use Swis\McpClient\Requests\RequestInterface;
-use Swis\McpClient\Results\InitializeResult;
-use Swis\McpClient\Transporters\RequiresConnectionNotification;
+use Swis\McpClient\Results\ResultInterface;
 use Swis\McpClient\Transporters\SseTransporter;
 use Swis\McpClient\Transporters\StdioTransporter;
+use Swis\McpClient\Transporters\StreamableHttpTransporter;
 
 /**
  * MCP client that manages communication with MCP servers.
@@ -52,7 +48,7 @@ class Client
     /**
      * @var string Protocol version
      */
-    protected string $protocolVersion = '2024-11-05';
+    protected string $protocolVersion = '2025-03-26';
 
     /**
      * Constructor
@@ -141,39 +137,19 @@ class Client
      * blocking until the connection is fully established
      *
      * @param callable|null $initCallback Optional callback for the initialize response
-     * @param array<string, mixed>|null $meta Optional metadata for the initialized notification
      * @throws \RuntimeException If connection fails
      */
-    public function connect(?callable $initCallback = null, ?array $meta = null): void
+    public function connect(?callable $initCallback = null): void
     {
-        $this->transporter->connect();
-        $this->transporter->listen($this->eventDispatcher);
-
-        $initRequest = new InitializeRequest(
+        $serverInfo = $this->transporter->initializeConnection(
+            eventDispatcher: $this->eventDispatcher,
             capabilities: $this->capabilities,
             clientInfo: $this->clientInfo,
             protocolVersion: $this->protocolVersion
         );
 
-        try {
-            $serverInfo = [];
-
-            await(
-                $this
-                ->sendRequestAsync($initRequest)
-                ->then(function (InitializeResult $result) use (&$serverInfo) {
-                    $serverInfo = $result->toArray();
-                })
-                ->then(fn () => register_shutdown_function(fn () => $this->loop?->stop()))
-                ->then(fn () => register_shutdown_function([$this, 'disconnect']))
-                ->then(fn () => $this->transporter instanceof RequiresConnectionNotification ? $this->sendRequest(new InitializedNotificationRequest($meta)) : null)
-            );
-
-            if ($initCallback !== null) {
-                $initCallback($serverInfo);
-            }
-        } catch (\Throwable $e) {
-            throw new ConnectionFailedException('Failed to connect to MCP server', 0, $e);
+        if ($initCallback !== null) {
+            $initCallback($serverInfo);
         }
     }
 
@@ -294,6 +270,25 @@ class Client
         ?LoopInterface $loop = null
     ): self {
         $transporter = new SseTransporter($endpoint, $logger, $loop);
+        $eventDispatcher = new EventDispatcher();
+
+        return new self($transporter, $eventDispatcher, $logger, $loop);
+    }
+
+    /**
+     * Create a client with StreamableHttp transporter
+     *
+     * @param string $endpoint The SSE endpoint URL
+     * @param LoggerInterface|null $logger Optional logger
+     * @param LoopInterface|null $loop Optional event loop
+     * @return self
+     */
+    public static function withStreamableHttp(
+        string $endpoint,
+        ?LoggerInterface $logger = null,
+        ?LoopInterface $loop = null
+    ): self {
+        $transporter = new StreamableHttpTransporter($endpoint, $logger, $loop);
         $eventDispatcher = new EventDispatcher();
 
         return new self($transporter, $eventDispatcher, $logger, $loop);

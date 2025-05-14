@@ -10,6 +10,8 @@ use function React\Async\await;
 
 use React\EventLoop\LoopInterface;
 use React\Http\Browser;
+use React\Http\Message\Response;
+use React\Http\Message\ResponseException;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 
@@ -19,6 +21,7 @@ use React\Stream\ReadableStreamInterface;
 use Swis\McpClient\AbstractTransporter;
 use Swis\McpClient\Exceptions\NotConnectedException;
 use Swis\McpClient\Exceptions\SseConnectionException;
+use Swis\McpClient\Requests\InitializedNotificationRequest;
 use Swis\McpClient\Requests\RequestInterface;
 
 /**
@@ -32,17 +35,17 @@ class SseTransporter extends AbstractTransporter implements RequiresConnectionNo
     /**
      * @var string The initial SSE endpoint URL
      */
-    private string $initialEndpoint;
+    protected string $initialEndpoint;
 
     /**
      * @var string|null The endpoint URL for sending requests (may be updated from SSE)
      */
-    private ?string $requestEndpoint = null;
+    protected ?string $requestEndpoint = null;
 
     /**
      * @var Browser The ReactPHP HTTP browser for requests
      */
-    private Browser $browser;
+    protected Browser $browser;
 
     /**
      * @var ReadableStreamInterface|null The SSE stream
@@ -52,7 +55,7 @@ class SseTransporter extends AbstractTransporter implements RequiresConnectionNo
     /**
      * @var string Buffer for SSE data
      */
-    private string $buffer = '';
+    protected string $buffer = '';
 
     /**
      * @var Deferred<mixed>|null Deferred for tracking SSE connection status
@@ -107,6 +110,22 @@ class SseTransporter extends AbstractTransporter implements RequiresConnectionNo
     }
 
     /**
+     * @return string[]
+     */
+    protected function getDefaultHeaders(): array
+    {
+        return [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ];
+    }
+
+    protected function afterInitialization(): void
+    {
+        $this->doSendRequest(new InitializedNotificationRequest());
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function disconnect(): void
@@ -138,32 +157,47 @@ class SseTransporter extends AbstractTransporter implements RequiresConnectionNo
             return reject(new SseConnectionException('Request endpoint not available, SSE connection not fully established'));
         }
 
+        return $this->doSendRequest($request);
+    }
+
+    /**
+     * Send the request to the MCP server
+     *
+     * @param RequestInterface $request
+     * @return PromiseInterface
+     */
+    protected function doSendRequest(RequestInterface $request): PromiseInterface
+    {
         /** @var string $requestEndpoint */
         $requestEndpoint = $this->requestEndpoint;
 
         $requestData = json_encode($request, JSON_UNESCAPED_SLASHES);
         assert($requestData !== false);
 
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-        ];
+        $headers = $this->getDefaultHeaders();
 
         $this->logger->debug('Sending request to MCP server', [
             'endpoint' => $requestEndpoint,
             'request' => $request,
+            'headers' => $headers,
         ]);
 
         $this->bindRequest($request);
 
-        return $this->browser->post($requestEndpoint, $headers, $requestData)
+        return $this->browser->requestStreaming('POST', $requestEndpoint, $headers, $requestData)
             ->then(
-                function ($response) {
-                    return (string) $response->getBody();
+                function (ResponseInterface $response) {
+                    return $response;
                 },
                 function (\Exception $e) {
+                    $message = $e->getMessage();
+
+                    if ($e instanceof ResponseException) {
+                        $message .= "\n" . $e->getResponse()->getBody();
+                    }
+
                     $this->logger->error('Request failed', [
-                        'error' => $e->getMessage(),
+                        'error' => $message,
                     ]);
 
                     throw $e;
@@ -199,35 +233,7 @@ class SseTransporter extends AbstractTransporter implements RequiresConnectionNo
         $this->browser->requestStreaming('GET', $this->initialEndpoint, $headers)
             ->then(
                 function (ResponseInterface $response) {
-                    $stream = $response->getBody();
-
-                    if (! $stream instanceof ReadableStreamInterface) {
-                        $error = new SseConnectionException('Invalid stream returned from SSE request');
-                        $this->connectionDeferred?->reject($error);
-
-                        return;
-                    }
-
-                    $this->sseStream = $stream;
-                    $this->logger->debug('SSE stream established');
-
-                    $stream->on('data', function ($chunk) {
-                        $this->buffer .= $chunk;
-                        $this->processBuffer();
-                    });
-
-                    $stream->on('error', function (\Exception $e) {
-                        $this->logger->error('SSE stream error', [
-                            'error' => $e->getMessage(),
-                        ]);
-
-                        $this->connectionDeferred?->reject($e);
-                        $this->reconnect();
-                    });
-
-                    $stream->on('close', function () {
-                        $this->logger->warning('SSE stream closed unexpectedly');
-                    });
+                    $this->handleSseResponse($response);
                 },
                 function (\Exception $e) {
                     $this->logger->error('Failed to establish SSE connection', [
@@ -237,6 +243,43 @@ class SseTransporter extends AbstractTransporter implements RequiresConnectionNo
                     $this->connectionDeferred?->reject($e);
                 }
             );
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return void
+     */
+    protected function handleSseResponse(ResponseInterface $response): void
+    {
+        $stream = $response->getBody();
+
+        if (! $stream instanceof ReadableStreamInterface) {
+            $error = new SseConnectionException('Invalid stream returned from SSE request');
+            $this->connectionDeferred?->reject($error);
+
+            return;
+        }
+
+        $this->sseStream = $stream;
+        $this->logger->debug('SSE stream established');
+
+        $stream->on('data', function ($chunk) {
+            $this->buffer .= $chunk;
+            $this->processBuffer();
+        });
+
+        $stream->on('error', function (\Exception $e) {
+            $this->logger->error('SSE stream error', [
+                'error' => $e->getMessage(),
+            ]);
+
+            $this->connectionDeferred?->reject($e);
+            $this->reconnect();
+        });
+
+        $stream->on('close', function () {
+            $this->logger->warning('SSE stream closed unexpectedly');
+        });
     }
 
     /**
