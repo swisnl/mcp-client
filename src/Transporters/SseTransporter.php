@@ -10,7 +10,6 @@ use function React\Async\await;
 
 use React\EventLoop\LoopInterface;
 use React\Http\Browser;
-use React\Http\Message\Response;
 use React\Http\Message\ResponseException;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
@@ -30,7 +29,7 @@ use Swis\McpClient\Requests\RequestInterface;
  * This transporter is non-blocking, allowing for simultaneous reading and writing.
  * Uses ReactPHP for HTTP requests and event handling.
  */
-class SseTransporter extends AbstractTransporter implements RequiresConnectionNotification
+class SseTransporter extends AbstractTransporter
 {
     /**
      * @var string The initial SSE endpoint URL
