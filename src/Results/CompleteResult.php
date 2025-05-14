@@ -5,13 +5,13 @@ namespace Swis\McpClient\Results;
 /**
  * DTO for the complete result
  *
- * @phpstan-type CompleteResultData array{completion: array{hasMore?: bool, total?: int, values: array<string>}, _meta?: array{}}
+ * @phpstan-type CompleteResultData array{completion: array{hasMore?: bool, total?: int, values?: array<string>}, _meta?: array{}}
  */
 class CompleteResult extends BaseResult
 {
     /**
      * @param string $requestId The request ID this result is for
-     * @param array{hasMore?: bool, total?: int, values: array<string>} $completion The completion results
+     * @param array{hasMore?: bool, total?: int, values?: array<string>} $completion The completion results
      * @param array{}|null $meta Optional metadata
      */
     public function __construct(
