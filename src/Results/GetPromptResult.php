@@ -2,21 +2,19 @@
 
 namespace Swis\McpClient\Results;
 
-use Swis\McpClient\Exceptions\UnknownContentTypeException;
-use Swis\McpClient\Schema\Content\EmbeddedResource;
-use Swis\McpClient\Schema\Content\ImageContent;
-use Swis\McpClient\Schema\Content\TextContent;
+use Swis\McpClient\Schema\PromptMessage;
 
 /**
  * DTO for the get prompt result
  *
- * @phpstan-type GetPromptResultData array{description: string|null, messages: array{}, _meta?: array{}}
+ * @phpstan-import-type PromptMessageData from \Swis\McpClient\Schema\PromptMessage
+ * @phpstan-type GetPromptResultData array{description: string|null, messages: array<PromptMessageData>, _meta?: array{}}
  */
 class GetPromptResult extends BaseResult
 {
     /**
      * @param string $requestId The request ID this result is for
-     * @param array<TextContent|ImageContent|EmbeddedResource> $messages The message of the prompt
+     * @param array<PromptMessage> $messages The messages of the prompt
      * @param string|null $description The description of the prompt
      * @param array{}|null $meta Optional metadata
      */
@@ -47,7 +45,7 @@ class GetPromptResult extends BaseResult
     /**
      * Get messages
      *
-     * @return array<TextContent|ImageContent|EmbeddedResource>
+     * @return array<PromptMessage>
      */
     public function getMessages(): array
     {
@@ -73,17 +71,12 @@ class GetPromptResult extends BaseResult
      */
     public static function fromArray(array $data, string $requestId): self
     {
-        $messages = array_map(fn (array $messageData) => match ($messageData['type']) {
-            'text' => TextContent::fromArray($messageData),
-            'image' => ImageContent::fromArray($messageData),
-            'resource' => EmbeddedResource::fromArray($messageData),
-            default => throw new UnknownContentTypeException('Unknown message type: ' . $messageData['type'])
-        }, $data['messages']);
+        $messages = array_map(fn (array $messageData) => PromptMessage::fromArray($messageData), $data['messages']);
 
         return new self(
             $requestId,
             $messages,
-            $data['description'],
+            $data['description'] ?? null,
             $data['_meta'] ?? null
         );
     }
