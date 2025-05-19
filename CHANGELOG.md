@@ -2,6 +2,18 @@
 
 All notable changes to `mcp-client` will be documented in this file.
 
+## 0.2.2 - 2025-05-19
+
+### What's Changed
+
+* fix: GetPromptResults should be compatible with the actual schema by @jormeijer in https://github.com/swisnl/mcp-client/pull/5
+
+### New Contributors
+
+* @jormeijer made their first contribution in https://github.com/swisnl/mcp-client/pull/5
+
+**Full Changelog**: https://github.com/swisnl/mcp-client/compare/0.2.1...0.2.2
+
 ## 0.2.1 - 2025-05-14
 
 ### What's Changed
