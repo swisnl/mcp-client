@@ -452,6 +452,12 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/Results/ResultInterface.php',
 ];
 $ignoreErrors[] = [
+	'message' => '#^Match arm comparison between \'resource\' and \'resource\' is always true\\.$#',
+	'identifier' => 'match.alwaysTrue',
+	'count' => 1,
+	'path' => __DIR__ . '/src/Schema/PromptMessage.php',
+];
+$ignoreErrors[] = [
 	'message' => '#^Parameter \\#1 \\$data of static method Swis\\\\McpClient\\\\Schema\\\\ToolAnnotation\\:\\:fromArray\\(\\) expects array\\{destructiveHint\\?\\: bool, idempotentHint\\?\\: bool, openWorldHint\\?\\: bool, readOnlyHint\\?\\: bool, title\\?\\: string\\}, array\\<string, mixed\\> given\\.$#',
 	'identifier' => 'argument.type',
 	'count' => 1,
