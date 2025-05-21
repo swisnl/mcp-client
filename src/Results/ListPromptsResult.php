@@ -5,15 +5,18 @@ namespace Swis\McpClient\Results;
 /**
  * DTO for the list prompts result
  *
- * @phpstan-type ListPromptsResultData array{prompts: array{description: string, name: string}, nextCursor?: string, _meta?: array{}}
+ * @phpstan-import-type Meta from BaseResult
+ * @phpstan-type PromptArgument array{name: string, description?: string, required?: bool}
+ * @phpstan-type Prompt array{name: string, description?: string, arguments?: array<PromptArgument>}
+ * @phpstan-type ListPromptsResultData array{prompts: array<Prompt>, nextCursor?: string, _meta?: Meta}
  */
 class ListPromptsResult extends BaseResult
 {
     /**
      * @param string $requestId The request ID this result is for
-     * @param array{description: string, name: string} $prompts The list of prompts
+     * @param array<Prompt> $prompts The list of prompts
      * @param string|null $nextCursor Optional cursor for pagination
-     * @param array{}|null $meta Optional metadata
+     * @param Meta|null $meta Optional metadata
      */
     public function __construct(
         string $requestId,
@@ -43,7 +46,7 @@ class ListPromptsResult extends BaseResult
     /**
      * Get prompts
      *
-     * @return array{description: string, name: string}
+     * @return array<Prompt>
      */
     public function getPrompts(): array
     {

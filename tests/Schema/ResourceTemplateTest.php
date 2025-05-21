@@ -21,14 +21,14 @@ class ResourceTemplateTest extends TestCase
 
         $template = new ResourceTemplate(
             name: 'Image Template',
-            uri: 'file:///path/to/images/{id}.jpg',
+            uriTemplate: 'file:///path/to/images/{id}.jpg',
             description: 'Template for image resources',
             mimeType: 'image/jpeg',
             annotations: $annotation
         );
 
         $this->assertEquals('Image Template', $template->getName());
-        $this->assertEquals('file:///path/to/images/{id}.jpg', $template->getUri());
+        $this->assertEquals('file:///path/to/images/{id}.jpg', $template->getUriTemplate());
         $this->assertEquals('Template for image resources', $template->getDescription());
         $this->assertEquals('image/jpeg', $template->getMimeType());
         $this->assertSame($annotation, $template->getAnnotations());
@@ -41,11 +41,11 @@ class ResourceTemplateTest extends TestCase
     {
         $template = new ResourceTemplate(
             name: 'Minimal Template',
-            uri: 'file:///path/to/resources/{id}'
+            uriTemplate: 'file:///path/to/resources/{id}'
         );
 
         $this->assertEquals('Minimal Template', $template->getName());
-        $this->assertEquals('file:///path/to/resources/{id}', $template->getUri());
+        $this->assertEquals('file:///path/to/resources/{id}', $template->getUriTemplate());
         $this->assertNull($template->getDescription());
         $this->assertNull($template->getMimeType());
         $this->assertNull($template->getAnnotations());
@@ -63,7 +63,7 @@ class ResourceTemplateTest extends TestCase
 
         $template = new ResourceTemplate(
             name: 'Image Template',
-            uri: 'file:///path/to/images/{id}.jpg',
+            uriTemplate: 'file:///path/to/images/{id}.jpg',
             description: 'Template for image resources',
             mimeType: 'image/jpeg',
             annotations: $annotation
@@ -73,13 +73,13 @@ class ResourceTemplateTest extends TestCase
 
         $this->assertIsArray($array);
         $this->assertArrayHasKey('name', $array);
-        $this->assertArrayHasKey('uri', $array);
+        $this->assertArrayHasKey('uriTemplate', $array);
         $this->assertArrayHasKey('description', $array);
         $this->assertArrayHasKey('mimeType', $array);
         $this->assertArrayHasKey('annotations', $array);
 
         $this->assertEquals('Image Template', $array['name']);
-        $this->assertEquals('file:///path/to/images/{id}.jpg', $array['uri']);
+        $this->assertEquals('file:///path/to/images/{id}.jpg', $array['uriTemplate']);
         $this->assertEquals('Template for image resources', $array['description']);
         $this->assertEquals('image/jpeg', $array['mimeType']);
         $this->assertEquals($annotation->toArray(), $array['annotations']);
@@ -92,20 +92,20 @@ class ResourceTemplateTest extends TestCase
     {
         $template = new ResourceTemplate(
             name: 'Minimal Template',
-            uri: 'file:///path/to/resources/{id}'
+            uriTemplate: 'file:///path/to/resources/{id}'
         );
 
         $array = $template->toArray();
 
         $this->assertIsArray($array);
         $this->assertArrayHasKey('name', $array);
-        $this->assertArrayHasKey('uri', $array);
+        $this->assertArrayHasKey('uriTemplate', $array);
         $this->assertArrayNotHasKey('description', $array);
         $this->assertArrayNotHasKey('mimeType', $array);
         $this->assertArrayNotHasKey('annotations', $array);
 
         $this->assertEquals('Minimal Template', $array['name']);
-        $this->assertEquals('file:///path/to/resources/{id}', $array['uri']);
+        $this->assertEquals('file:///path/to/resources/{id}', $array['uriTemplate']);
     }
 
     /**
@@ -120,7 +120,7 @@ class ResourceTemplateTest extends TestCase
 
         $array = [
             'name' => 'Image Template',
-            'uri' => 'file:///path/to/images/{id}.jpg',
+            'uriTemplate' => 'file:///path/to/images/{id}.jpg',
             'description' => 'Template for image resources',
             'mimeType' => 'image/jpeg',
             'annotations' => $annotationArray,
@@ -129,7 +129,7 @@ class ResourceTemplateTest extends TestCase
         $template = ResourceTemplate::fromArray($array);
 
         $this->assertEquals('Image Template', $template->getName());
-        $this->assertEquals('file:///path/to/images/{id}.jpg', $template->getUri());
+        $this->assertEquals('file:///path/to/images/{id}.jpg', $template->getUriTemplate());
         $this->assertEquals('Template for image resources', $template->getDescription());
         $this->assertEquals('image/jpeg', $template->getMimeType());
 
@@ -150,13 +150,13 @@ class ResourceTemplateTest extends TestCase
     {
         $array = [
             'name' => 'Minimal Template',
-            'uri' => 'file:///path/to/resources/{id}',
+            'uriTemplate' => 'file:///path/to/resources/{id}',
         ];
 
         $template = ResourceTemplate::fromArray($array);
 
         $this->assertEquals('Minimal Template', $template->getName());
-        $this->assertEquals('file:///path/to/resources/{id}', $template->getUri());
+        $this->assertEquals('file:///path/to/resources/{id}', $template->getUriTemplate());
         $this->assertNull($template->getDescription());
         $this->assertNull($template->getMimeType());
         $this->assertNull($template->getAnnotations());
@@ -174,7 +174,7 @@ class ResourceTemplateTest extends TestCase
 
         $original = new ResourceTemplate(
             name: 'Image Template',
-            uri: 'file:///path/to/images/{id}.jpg',
+            uriTemplate: 'file:///path/to/images/{id}.jpg',
             description: 'Template for image resources',
             mimeType: 'image/jpeg',
             annotations: $annotation
@@ -184,7 +184,7 @@ class ResourceTemplateTest extends TestCase
         $recreated = ResourceTemplate::fromArray($array);
 
         $this->assertEquals($original->getName(), $recreated->getName());
-        $this->assertEquals($original->getUri(), $recreated->getUri());
+        $this->assertEquals($original->getUriTemplate(), $recreated->getUriTemplate());
         $this->assertEquals($original->getDescription(), $recreated->getDescription());
         $this->assertEquals($original->getMimeType(), $recreated->getMimeType());
 

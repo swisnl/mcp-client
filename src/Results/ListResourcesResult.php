@@ -7,7 +7,8 @@ use Swis\McpClient\Schema\Resource;
 /**
  * DTO for the list resources result
  *
- * @phpstan-type ListResourcesResultData array{resources: array<array{resourceId: string, name: string, type: string, uri: string, tags: array<string>}>, nextCursor?: string|null, _meta?: array{}}
+ * @phpstan-import-type Meta from BaseResult
+ * @phpstan-type ListResourcesResultData array{resources: array<array{resourceId: string, name: string, type: string, uri: string, tags: array<string>}>, nextCursor?: string|null, _meta?: Meta}
  */
 class ListResourcesResult extends BaseResult
 {
@@ -15,7 +16,7 @@ class ListResourcesResult extends BaseResult
      * @param string $requestId The request ID this result is for
      * @param Resource[] $resources The list of resources
      * @param string|null $nextCursor Optional cursor for pagination
-     * @param array{}|null $meta Optional metadata
+     * @param Meta|null $meta Optional metadata
      */
     public function __construct(
         string $requestId,

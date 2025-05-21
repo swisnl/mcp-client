@@ -7,7 +7,9 @@ use Swis\McpClient\Schema\ResourceTemplate;
 /**
  * DTO for the list resource templates result
  *
- * @phpstan-type ListResourceTemplatesResultData array{templates: array<array{templateId: string, name: string, description: string, type: string, uri: string, tags: array<string>}>, nextCursor?: string|null, _meta?: array{}}
+ * @phpstan-import-type Meta from BaseResult
+ * @phpstan-import-type ResourceTemplateData from \Swis\McpClient\Schema\ResourceTemplate
+ * @phpstan-type ListResourceTemplatesResultData array{templates: array<ResourceTemplateData>, nextCursor?: string|null, _meta?: Meta}
  */
 class ListResourceTemplatesResult extends BaseResult
 {
@@ -15,7 +17,7 @@ class ListResourceTemplatesResult extends BaseResult
      * @param string $requestId The request ID this result is for
      * @param ResourceTemplate[] $templates The list of resource templates
      * @param string|null $nextCursor Optional cursor for pagination
-     * @param array{}|null $meta Optional metadata
+     * @param Meta|null $meta Optional metadata
      */
     public function __construct(
         string $requestId,

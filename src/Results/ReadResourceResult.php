@@ -8,14 +8,15 @@ use Swis\McpClient\Schema\Resource\TextResourceContents;
 /**
  * DTO for the read resource result
  *
- * @phpstan-type ReadResourceResultData array{contents: array<array{blob: string, uri: string, mimeType?: string}|array{text: string, uri: string, mimeType?: string}>, _meta?: array{}}
+ * @phpstan-import-type Meta from BaseResult
+ * @phpstan-type ReadResourceResultData array{contents: array<array{blob: string, uri: string, mimeType?: string}|array{text: string, uri: string, mimeType?: string}>, _meta?: Meta}
  */
 class ReadResourceResult extends BaseResult
 {
     /**
      * @param string $requestId The request ID this result is for
      * @param array<TextResourceContents|BlobResourceContents> $contents The resource contents
-     * @param array{}|null $meta Optional metadata
+     * @param Meta|null $meta Optional metadata
      */
     public function __construct(
         string $requestId,
