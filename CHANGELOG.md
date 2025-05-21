@@ -2,6 +2,14 @@
 
 All notable changes to `mcp-client` will be documented in this file.
 
+## 0.3.0 - 2025-05-21
+
+### What's Changed
+
+* fix: 2025-03-26 Schema compatibility by @jormeijer in https://github.com/swisnl/mcp-client/pull/6
+
+**Full Changelog**: https://github.com/swisnl/mcp-client/compare/0.2.2...0.3.0
+
 ## 0.2.2 - 2025-05-19
 
 ### What's Changed
