@@ -4,6 +4,8 @@ namespace Swis\McpClient\Results;
 
 /**
  * Base class for all result DTO objects
+ *
+ * @phpstan-type Meta array<string, mixed>
  */
 abstract class BaseResult implements ResultInterface
 {
@@ -17,7 +19,7 @@ abstract class BaseResult implements ResultInterface
     /**
      * Optional metadata
      *
-     * @var array{}|null
+     * @var Meta|null
      */
     protected ?array $meta = null;
 
@@ -25,7 +27,7 @@ abstract class BaseResult implements ResultInterface
      * Constructor
      *
      * @param string $requestId The request ID this result is for
-     * @param array{}|null $meta Optional metadata
+     * @param Meta|null $meta Optional metadata
      */
     public function __construct(string $requestId, ?array $meta = null)
     {
@@ -46,7 +48,7 @@ abstract class BaseResult implements ResultInterface
     /**
      * Get metadata associated with this result
      *
-     * @return array{}|null
+     * @return Meta|null
      */
     public function getMeta(): ?array
     {

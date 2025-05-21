@@ -308,32 +308,14 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/Results/BaseResult.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\CallToolResult\\:\\:fromArray\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#',
-	'identifier' => 'missingType.iterableValue',
+	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\CallToolResult\\:\\:toArray\\(\\) should return array\\{content\\: array\\<Swis\\\\McpClient\\\\Schema\\\\Content\\\\EmbeddedResource\\|Swis\\\\McpClient\\\\Schema\\\\Content\\\\ImageContent\\|Swis\\\\McpClient\\\\Schema\\\\Content\\\\TextContent\\>, isError\\?\\: bool, _meta\\?\\: array\\<string, mixed\\>\\} but returns array\\{content\\: array\\<array\\{type\\: \'image\', data\\: string, mimeType\\: string, annotations\\?\\: array\\{audience\\?\\: array\\<\'assistant\'\\|\'user\'\\>, priority\\?\\: float\\}\\}\\|array\\{type\\: \'resource\', resource\\: array\\{blob\\: string, uri\\: string, mimeType\\?\\: string\\}\\|array\\{text\\: string, uri\\: string, mimeType\\?\\: string\\}, annotations\\?\\: array\\{audience\\?\\: array\\<\'assistant\'\\|\'user\'\\>, priority\\?\\: float\\}\\}\\|array\\{type\\: \'text\', text\\: string, annotations\\?\\: array\\{audience\\?\\: array\\<\'assistant\'\\|\'user\'\\>, priority\\?\\: float\\}\\}\\>, isError\\?\\: true\\}\\.$#',
+	'identifier' => 'return.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Results/CallToolResult.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\CallToolResult\\:\\:toArray\\(\\) return type has no value type specified in iterable type array\\.$#',
-	'identifier' => 'missingType.iterableValue',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Results/CallToolResult.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^PHPDoc tag @param for parameter \\$data with type mixed is not subtype of native type array\\.$#',
-	'identifier' => 'parameter.phpDocType',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Results/CallToolResult.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^PHPDoc tag @phpstan\\-type CallToolResultData has invalid value\\: Unexpected token "\\:", expected \'\\}\' at offset 88 on line 4$#',
-	'identifier' => 'phpDoc.parseError',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Results/CallToolResult.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#',
-	'identifier' => 'return.phpDocType',
+	'message' => '#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(Swis\\\\McpClient\\\\Schema\\\\Content\\\\EmbeddedResource\\|Swis\\\\McpClient\\\\Schema\\\\Content\\\\ImageContent\\|Swis\\\\McpClient\\\\Schema\\\\Content\\\\TextContent\\)\\: mixed\\)\\|null, Closure\\(array\\)\\: \\(Swis\\\\McpClient\\\\Schema\\\\Content\\\\EmbeddedResource\\|Swis\\\\McpClient\\\\Schema\\\\Content\\\\ImageContent\\|Swis\\\\McpClient\\\\Schema\\\\Content\\\\TextContent\\) given\\.$#',
+	'identifier' => 'argument.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Results/CallToolResult.php',
 ];
@@ -368,49 +350,13 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/Results/CompleteResult.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Class Swis\\\\McpClient\\\\Results\\\\InitializeResult has type alias InitializeResultData with no value type specified in iterable type array\\.$#',
-	'identifier' => 'missingType.iterableValue',
-	'count' => 2,
-	'path' => __DIR__ . '/src/Results/InitializeResult.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\InitializeResult\\:\\:fromArray\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#',
-	'identifier' => 'missingType.iterableValue',
-	'count' => 2,
-	'path' => __DIR__ . '/src/Results/InitializeResult.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\InitializeResult\\:\\:getCapabilities\\(\\) return type has no value type specified in iterable type array\\.$#',
-	'identifier' => 'missingType.iterableValue',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Results/InitializeResult.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\InitializeResult\\:\\:getServerInfo\\(\\) return type has no value type specified in iterable type array\\.$#',
-	'identifier' => 'missingType.iterableValue',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Results/InitializeResult.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\InitializeResult\\:\\:toArray\\(\\) return type has no value type specified in iterable type array\\.$#',
-	'identifier' => 'missingType.iterableValue',
-	'count' => 2,
-	'path' => __DIR__ . '/src/Results/InitializeResult.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\ListResourceTemplatesResult\\:\\:toArray\\(\\) should return array\\{templates\\: array\\<array\\{templateId\\: string, name\\: string, description\\: string, type\\: string, uri\\: string, tags\\: array\\<string\\>\\}\\>, nextCursor\\?\\: string\\|null, _meta\\?\\: array\\{\\}\\} but returns array\\{templates\\: array\\<array\\{name\\: string, uri\\: string, description\\?\\: string, mimeType\\?\\: string, annotations\\?\\: array\\{audience\\?\\: array\\<\'assistant\'\\|\'user\'\\>, priority\\?\\: float\\}\\}\\>, nextCursor\\?\\: string\\}\\.$#',
-	'identifier' => 'return.type',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Results/ListResourceTemplatesResult.php',
-];
-$ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\ListResourcesResult\\:\\:toArray\\(\\) should return array\\{resources\\: array\\<array\\{resourceId\\: string, name\\: string, type\\: string, uri\\: string, tags\\: array\\<string\\>\\}\\>, nextCursor\\?\\: string\\|null, _meta\\?\\: array\\{\\}\\} but returns array\\{resources\\: array\\<array\\{name\\: string, uri\\: string, description\\?\\: string, mimeType\\?\\: string, size\\?\\: int, annotations\\?\\: array\\{audience\\?\\: array\\<\'assistant\'\\|\'user\'\\>, priority\\?\\: float\\}\\}\\>, nextCursor\\?\\: string\\}\\.$#',
+	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\ListResourcesResult\\:\\:toArray\\(\\) should return array\\{resources\\: array\\<array\\{resourceId\\: string, name\\: string, type\\: string, uri\\: string, tags\\: array\\<string\\>\\}\\>, nextCursor\\?\\: string\\|null, _meta\\?\\: array\\<string, mixed\\>\\} but returns array\\{resources\\: array\\<array\\{name\\: string, uri\\: string, description\\?\\: string, mimeType\\?\\: string, size\\?\\: int, annotations\\?\\: array\\{audience\\?\\: array\\<\'assistant\'\\|\'user\'\\>, priority\\?\\: float\\}\\}\\>, nextCursor\\?\\: string\\}\\.$#',
 	'identifier' => 'return.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Results/ListResourcesResult.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\ListToolsResult\\:\\:toArray\\(\\) should return array\\{tools\\: array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string, annotations\\?\\: array\\<string, mixed\\>\\}, nextCursor\\?\\: string\\|null, _meta\\?\\: array\\{\\}\\} but returns array\\{tools\\: array\\<array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string, annotations\\?\\: array\\<string, mixed\\>\\}\\>, nextCursor\\?\\: string\\}\\.$#',
+	'message' => '#^Method Swis\\\\McpClient\\\\Results\\\\ListToolsResult\\:\\:toArray\\(\\) should return array\\{tools\\: array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string, annotations\\?\\: array\\<string, mixed\\>\\}, nextCursor\\?\\: string\\|null, _meta\\?\\: array\\<string, mixed\\>\\} but returns array\\{tools\\: array\\<array\\{name\\: string, inputSchema\\?\\: array\\{\\}\\|array\\{properties\\: array\\{type\\: string, 0\\: mixed\\}, required\\: array\\<string\\>, type\\: string\\}, description\\?\\: string, annotations\\?\\: array\\<string, mixed\\>\\}\\>, nextCursor\\?\\: string\\}\\.$#',
 	'identifier' => 'return.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Results/ListToolsResult.php',
@@ -434,7 +380,7 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/Results/ResultFactory.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Parameter \\#1 \\$data of static method Swis\\\\McpClient\\\\Results\\\\JsonRpcError\\:\\:fromArray\\(\\) expects array\\{code\\: int, message\\: string, data\\?\\: array\\{\\}, _meta\\?\\: array\\{\\}\\}, array\\<mixed, mixed\\> given\\.$#',
+	'message' => '#^Parameter \\#1 \\$data of static method Swis\\\\McpClient\\\\Results\\\\JsonRpcError\\:\\:fromArray\\(\\) expects array\\{code\\: int, message\\: string, data\\?\\: array\\<string, string\\>, _meta\\?\\: array\\<string, mixed\\>\\}, array\\<mixed, mixed\\> given\\.$#',
 	'identifier' => 'argument.type',
 	'count' => 1,
 	'path' => __DIR__ . '/src/Results/ResultFactory.php',

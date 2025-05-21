@@ -5,7 +5,8 @@ namespace Swis\McpClient\Results;
 /**
  * Represents a JSON-RPC error response
  *
- * @phpstan-type JsonRpcErrorData array{code: int, message: string, data?: array{}, _meta?: array{}}
+ * @phpstan-import-type Meta from BaseResult
+ * @phpstan-type JsonRpcErrorData array{code: int, message: string, data?: array<string, string>, _meta?: Meta}
  */
 class JsonRpcError extends BaseResult
 {
@@ -15,8 +16,8 @@ class JsonRpcError extends BaseResult
      * @param string $requestId The request ID this error is for
      * @param int $code The error code
      * @param string $message The error message
-     * @param array{}|null $data Additional error data
-     * @param array{}|null $meta Optional metadata
+     * @param array<string, string>|null $data Additional error data
+     * @param Meta|null $meta Optional metadata
      */
     public function __construct(
         string $requestId,

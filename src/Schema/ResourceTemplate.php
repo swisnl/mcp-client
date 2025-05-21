@@ -5,20 +5,20 @@ namespace Swis\McpClient\Schema;
 /**
  * Represents a resource template in the MCP schema
  *
- * @phpstan-type ResourceTemplateData array{name: string, uri: string, description?: string, mimeType?: string, annotations?: array{audience?: array<'assistant'|'user'>, priority?: float}}
+ * @phpstan-type ResourceTemplateData array{name: string, uriTemplate: string, description?: string, mimeType?: string, annotations?: array{audience?: array<'assistant'|'user'>, priority?: float}}
  */
 class ResourceTemplate
 {
     /**
      * @param string $name A human-readable name for this resource template
-     * @param string $uri The URI pattern for resources created from this template
+     * @param string $uriTemplate The URI template (according to RFC 6570) that can be used to construct resource URIs.
      * @param string|null $description Optional description of what resources created from this template represent
      * @param string|null $mimeType Optional MIME type of resources created from this template
      * @param Annotation|null $annotations Optional annotations with audience and priority
      */
     public function __construct(
         protected string $name,
-        protected string $uri,
+        protected string $uriTemplate,
         protected ?string $description = null,
         protected ?string $mimeType = null,
         protected ?Annotation $annotations = null
@@ -36,13 +36,13 @@ class ResourceTemplate
     }
 
     /**
-     * Get the URI pattern
+     * Get the URI template
      *
      * @return string
      */
-    public function getUri(): string
+    public function getUriTemplate(): string
     {
-        return $this->uri;
+        return $this->uriTemplate;
     }
 
     /**
@@ -84,7 +84,7 @@ class ResourceTemplate
     {
         $data = [
             'name' => $this->name,
-            'uri' => $this->uri,
+            'uriTemplate' => $this->uriTemplate,
         ];
 
         if ($this->description !== null) {
@@ -116,7 +116,7 @@ class ResourceTemplate
 
         return new self(
             $data['name'],
-            $data['uri'],
+            $data['uriTemplate'],
             $data['description'] ?? null,
             $data['mimeType'] ?? null,
             $annotations

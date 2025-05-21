@@ -7,7 +7,8 @@ use Swis\McpClient\Schema\Tool;
 /**
  * DTO for the list tools result
  *
- * @phpstan-type ListToolsResultData array{tools: array{name: string, inputSchema?: array{properties: array{type: string, mixed}, required: array<string>, type: string}|array{}, description?: string, annotations?: array<string, mixed>}, nextCursor?: string|null, _meta?: array{}}
+ * @phpstan-import-type Meta from BaseResult
+ * @phpstan-type ListToolsResultData array{tools: array{name: string, inputSchema?: array{properties: array{type: string, mixed}, required: array<string>, type: string}|array{}, description?: string, annotations?: array<string, mixed>}, nextCursor?: string|null, _meta?: Meta}
  */
 class ListToolsResult extends BaseResult
 {
@@ -15,7 +16,7 @@ class ListToolsResult extends BaseResult
      * @param string $requestId The request ID this result is for
      * @param Tool[] $tools The list of tools
      * @param string|null $nextCursor Optional cursor for pagination
-     * @param array{}|null $meta Optional metadata
+     * @param Meta|null $meta Optional metadata
      */
     public function __construct(
         string $requestId,

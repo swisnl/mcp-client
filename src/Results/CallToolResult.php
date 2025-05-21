@@ -10,7 +10,11 @@ use Swis\McpClient\Schema\Content\TextContent;
 /**
  * DTO for the call tool result
  *
- * @phpstan-type CallToolResultData array{content: array<array{type: <'text'|'image'|'resource'>, text?: string, uri?: string, width?: int, height?: int, tags?: array<string>}>, _meta?: array}
+ * @phpstan-import-type Meta from BaseResult
+ * @phpstan-import-type TextContentData from \Swis\McpClient\Schema\Content\TextContent
+ * @phpstan-import-type ImageContentData from \Swis\McpClient\Schema\Content\ImageContent
+ * @phpstan-import-type EmbeddedResourceData from \Swis\McpClient\Schema\Content\EmbeddedResource
+ * @phpstan-type CallToolResultData array{content: array<TextContent|ImageContent|EmbeddedResource>, isError?: bool, _meta?: Meta}
  */
 class CallToolResult extends BaseResult
 {
@@ -18,7 +22,7 @@ class CallToolResult extends BaseResult
      * @param string $requestId The request ID this result is for
      * @param array<TextContent|ImageContent|EmbeddedResource> $content The tool call content
      * @param bool $isError Whether this is an error response
-     * @param array{}|null $meta Optional metadata
+     * @param Meta|null $meta Optional metadata
      */
     public function __construct(
         string $requestId,
