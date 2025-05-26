@@ -167,7 +167,9 @@ trait ClientRequestTrait
         $request = $request ?? new PingRequest();
 
         $deferred = new Deferred();
-        $this->sendRequest($request)->then(fn ($response) => $deferred->resolve($response['id'] === $request->getId()));
+        $this->sendRequest($request, function ($response) use ($deferred) {
+            $deferred->resolve($response);
+        });
 
         return $this->await($deferred);
     }
