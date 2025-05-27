@@ -32,12 +32,6 @@ $ignoreErrors[] = [
 	'path' => __DIR__ . '/src/AbstractTransporter.php',
 ];
 $ignoreErrors[] = [
-	'message' => '#^Cannot access offset \'id\' on array\\|bool\\|Exception\\|float\\|int\\|string\\.$#',
-	'identifier' => 'offsetAccess.nonOffsetAccessible',
-	'count' => 1,
-	'path' => __DIR__ . '/src/Client.php',
-];
-$ignoreErrors[] = [
 	'message' => '#^Method Swis\\\\McpClient\\\\Client\\:\\:await\\(\\) has parameter \\$deferred with generic class React\\\\Promise\\\\Deferred but does not specify its types\\: T$#',
 	'identifier' => 'missingType.generics',
 	'count' => 1,
