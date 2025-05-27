@@ -167,7 +167,13 @@ trait ClientRequestTrait
         $request = $request ?? new PingRequest();
 
         $deferred = new Deferred();
-        $this->sendRequest($request)->then(fn ($response) => $deferred->resolve($response['id'] === $request->getId()));
+        $this->sendRequest($request, function ($response) use ($deferred) {
+            if ($response instanceof JsonRpcError) {
+                $deferred->resolve($response);
+            } else {
+                $deferred->resolve(true);
+            }
+        });
 
         return $this->await($deferred);
     }
