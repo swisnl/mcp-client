@@ -33,6 +33,7 @@ composer require swisnl/mcp-client
 - PSR-3 Logger interface support
 - Most of MCP protocol support (2025-03-26)
 - Tool annotation support
+- `_meta` support
 
 ## Basic Usage
 
@@ -148,6 +149,16 @@ class MathMcpConnection extends McpConnection
 ```
 
 ## Advanced Usage
+
+### Metadata
+
+You can send metadata using the `_meta` parameter:
+```php
+use Swis\McpClient\Requests\CallToolRequest
+
+$request = new CallToolRequest('search');
+$request->withMeta(['traceparent' => '0000-0000-00-00x']);
+```
 
 ### Custom Transporter
 

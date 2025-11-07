@@ -22,6 +22,13 @@ abstract class BaseRequest implements RequestInterface
     protected string $id;
 
     /**
+     * The metadata for this request. This will end up in the _meta parameter
+     *
+     * @var array<string, mixed>
+     */
+    protected array $meta;
+
+    /**
      * Convert the DTO to an array structure
      *
      * @return array
@@ -47,6 +54,19 @@ abstract class BaseRequest implements RequestInterface
     public function withId(string $id): self
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Sets the metadata that will end up in the _meta parameter
+     *
+     * @param array<string, mixed> $meta The metadata used in _meta parameter
+     * @return $this
+     */
+    public function withMeta(array $meta): self
+    {
+        $this->meta = $meta;
 
         return $this;
     }
@@ -79,6 +99,11 @@ abstract class BaseRequest implements RequestInterface
         ];
 
         $params = $this->toArray();
+
+        if (isset($this->meta)) {
+            $params['_meta'] = $this->meta;
+        }
+
         if (! empty($params)) {
             $data['params'] = $params;
         }
