@@ -2,6 +2,17 @@
 
 All notable changes to `mcp-client` will be documented in this file.
 
+## 0.4.0 - 2025-11-07
+
+### What's Changed
+
+* Add support for `_meta`
+* build(deps): bump stefanzweifel/git-auto-commit-action from 5 to 6 by @dependabot[bot] in https://github.com/swisnl/mcp-client/pull/9
+* build(deps): bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/swisnl/mcp-client/pull/10
+* build(deps): bump stefanzweifel/git-auto-commit-action from 6 to 7 by @dependabot[bot] in https://github.com/swisnl/mcp-client/pull/11
+
+**Full Changelog**: https://github.com/swisnl/mcp-client/compare/0.3.0...0.4.0
+
 ## 0.3.0 - 2025-05-21
 
 ### What's Changed
