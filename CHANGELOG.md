@@ -2,6 +2,20 @@
 
 All notable changes to `mcp-client` will be documented in this file.
 
+## 0.5.0 - 2026-01-05
+
+### What's Changed
+
+* build(deps): bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/swisnl/mcp-client/pull/12
+* build(deps): bump dependabot/fetch-metadata from 2.4.0 to 2.5.0 by @dependabot[bot] in https://github.com/swisnl/mcp-client/pull/13
+* Remove unsupported roots capabilities by @andrewbelcher in https://github.com/swisnl/mcp-client/pull/14
+
+### New Contributors
+
+* @andrewbelcher made their first contribution in https://github.com/swisnl/mcp-client/pull/14
+
+**Full Changelog**: https://github.com/swisnl/mcp-client/compare/0.4.0...0.5.0
+
 ## 0.4.0 - 2025-11-07
 
 ### What's Changed
