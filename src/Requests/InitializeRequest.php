@@ -21,7 +21,6 @@ class InitializeRequest extends BaseRequest
 
         // Set default capabilities
         $this->capabilities = array_merge([
-            'roots' => ['listChanged' => false],
             'sampling' => new \StdClass(),
         ], $capabilities);
 
