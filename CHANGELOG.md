@@ -2,6 +2,14 @@
 
 All notable changes to `mcp-client` will be documented in this file.
 
+## 0.5.1 - 2026-02-17
+
+### What's Changed
+
+* feat: Add support for custom headers by @jormeijer in https://github.com/swisnl/mcp-client/pull/15
+
+**Full Changelog**: https://github.com/swisnl/mcp-client/compare/0.5.0...0.5.1
+
 ## 0.5.0 - 2026-01-05
 
 ### What's Changed
