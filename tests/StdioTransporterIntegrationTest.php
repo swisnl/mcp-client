@@ -10,6 +10,7 @@ use Swis\McpClient\EventDispatcher;
 use Swis\McpClient\Schema\Tool;
 use Swis\McpClient\Transporters\SseTransporter;
 use Swis\McpClient\Transporters\StdioTransporter;
+use Swis\McpClient\Transporters\StreamableHttpTransporter;
 
 /**
  * Integration test for the StdioTransporter
@@ -43,6 +44,18 @@ class StdioTransporterIntegrationTest extends TestCase
         // Create clients with different transporters
         $stdioClient = Client::withStdio($logger);
         $sseClient = Client::withSse('https://example.com/sse', $logger);
+        $sseClientWithHeaders = Client::withSse(
+            'https://example.com/sse',
+            $logger,
+            null,
+            ['Authorization' => 'Bearer test-token']
+        );
+        $streamableClientWithHeaders = Client::withStreamableHttp(
+            'https://example.com/mcp',
+            $logger,
+            null,
+            ['Authorization' => 'Bearer test-token']
+        );
 
         // Verify client properties
         $this->assertInstanceOf(Client::class, $stdioClient);
@@ -51,6 +64,18 @@ class StdioTransporterIntegrationTest extends TestCase
 
         $this->assertInstanceOf(Client::class, $sseClient);
         $this->assertInstanceOf(SseTransporter::class, $this->getObjectProperty($sseClient, 'transporter'));
+        $this->assertInstanceOf(Client::class, $sseClientWithHeaders);
+        $this->assertInstanceOf(SseTransporter::class, $this->getObjectProperty($sseClientWithHeaders, 'transporter'));
+        $this->assertInstanceOf(Client::class, $streamableClientWithHeaders);
+        $this->assertInstanceOf(StreamableHttpTransporter::class, $this->getObjectProperty($streamableClientWithHeaders, 'transporter'));
+        $this->assertSame(
+            ['Authorization' => 'Bearer test-token'],
+            $this->getObjectProperty($this->getObjectProperty($sseClientWithHeaders, 'transporter'), 'customHeaders')
+        );
+        $this->assertSame(
+            ['Authorization' => 'Bearer test-token'],
+            $this->getObjectProperty($this->getObjectProperty($streamableClientWithHeaders, 'transporter'), 'customHeaders')
+        );
 
         // Test client configuration
         $clientInfo = $this->getObjectProperty($stdioClient, 'clientInfo');

@@ -44,7 +44,10 @@ use Swis\McpClient\Client;
 
 // Create client with SSE transporter
 $endpoint = 'https://your-mcp-server.com/sse';
-$client = Client::withSse($endpoint);
+$client = Client::withSse(
+    $endpoint,
+    headers: ['Authorization' => 'Bearer your-token']
+);
 
 // Connect to the server
 $client->connect(function($initResponse) {
@@ -92,7 +95,10 @@ use Swis\McpClient\Client;
 
 // Create client with StreamableHttp transporter
 $endpoint = 'https://your-mcp-server.com/';
-$client = Client::withStreamableHttp($endpoint);
+$client = Client::withStreamableHttp(
+    $endpoint,
+    headers: ['Authorization' => 'Bearer your-token']
+);
 
 // Connect to the server
 $client->connect();

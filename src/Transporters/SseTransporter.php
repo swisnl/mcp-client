@@ -47,6 +47,11 @@ class SseTransporter extends AbstractTransporter
     protected Browser $browser;
 
     /**
+     * @var array<string, string> Custom headers to send with every HTTP request
+     */
+    protected array $customHeaders = [];
+
+    /**
      * @var ReadableStreamInterface|null The SSE stream
      */
     private ?ReadableStreamInterface $sseStream = null;
@@ -67,14 +72,17 @@ class SseTransporter extends AbstractTransporter
      * @param string $endpoint The SSE endpoint URL
      * @param LoggerInterface|null $logger Optional logger
      * @param LoopInterface|null $loop Optional event loop
+     * @param array<string, string> $headers Custom headers to send with every request
      */
     public function __construct(
         string $endpoint,
         ?LoggerInterface $logger = null,
-        ?LoopInterface $loop = null
+        ?LoopInterface $loop = null,
+        array $headers = []
     ) {
         parent::__construct($logger, $loop);
         $this->initialEndpoint = $endpoint;
+        $this->customHeaders = $headers;
         $this->browser = new Browser($this->loop);
     }
 
@@ -109,13 +117,24 @@ class SseTransporter extends AbstractTransporter
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     protected function getDefaultHeaders(): array
     {
         return [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function getDefaultSseConnectionHeaders(): array
+    {
+        return [
+            'Accept' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
         ];
     }
 
@@ -173,7 +192,7 @@ class SseTransporter extends AbstractTransporter
         $requestData = json_encode($request, JSON_UNESCAPED_SLASHES);
         assert($requestData !== false);
 
-        $headers = $this->getDefaultHeaders();
+        $headers = $this->getRequestHeaders();
 
         $this->logger->debug('Sending request to MCP server', [
             'endpoint' => $requestEndpoint,
@@ -205,6 +224,22 @@ class SseTransporter extends AbstractTransporter
     }
 
     /**
+     * @return array<string, string>
+     */
+    protected function getRequestHeaders(): array
+    {
+        return array_merge($this->customHeaders, $this->getDefaultHeaders());
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function getSseConnectionHeaders(): array
+    {
+        return array_merge($this->customHeaders, $this->getDefaultSseConnectionHeaders());
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function listen(EventDispatcherInterface $eventDispatcher): void
@@ -221,10 +256,7 @@ class SseTransporter extends AbstractTransporter
      */
     protected function initSseConnection(): void
     {
-        $headers = [
-            'Accept' => 'text/event-stream',
-            'Cache-Control' => 'no-cache',
-        ];
+        $headers = $this->getSseConnectionHeaders();
 
         $this->logger->debug('Initializing SSE connection', ['endpoint' => $this->initialEndpoint]);
 
