@@ -262,14 +262,16 @@ class Client
      * @param string $endpoint The SSE endpoint URL
      * @param LoggerInterface|null $logger Optional logger
      * @param LoopInterface|null $loop Optional event loop
+     * @param array<string, string> $headers Custom headers to send with every request
      * @return self
      */
     public static function withSse(
         string $endpoint,
         ?LoggerInterface $logger = null,
-        ?LoopInterface $loop = null
+        ?LoopInterface $loop = null,
+        array $headers = []
     ): self {
-        $transporter = new SseTransporter($endpoint, $logger, $loop);
+        $transporter = new SseTransporter($endpoint, $logger, $loop, $headers);
         $eventDispatcher = new EventDispatcher();
 
         return new self($transporter, $eventDispatcher, $logger, $loop);
@@ -281,14 +283,16 @@ class Client
      * @param string $endpoint The SSE endpoint URL
      * @param LoggerInterface|null $logger Optional logger
      * @param LoopInterface|null $loop Optional event loop
+     * @param array<string, string> $headers Custom headers to send with every request
      * @return self
      */
     public static function withStreamableHttp(
         string $endpoint,
         ?LoggerInterface $logger = null,
-        ?LoopInterface $loop = null
+        ?LoopInterface $loop = null,
+        array $headers = []
     ): self {
-        $transporter = new StreamableHttpTransporter($endpoint, $logger, $loop);
+        $transporter = new StreamableHttpTransporter($endpoint, $logger, $loop, $headers);
         $eventDispatcher = new EventDispatcher();
 
         return new self($transporter, $eventDispatcher, $logger, $loop);

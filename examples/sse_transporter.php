@@ -23,7 +23,11 @@ $logger = new ConsoleLogger();
 
 // Create client with SSE transporter and the logger
 $endpoint = 'https://glama.ai/mcp/instances/[example]/sse?'; // Replace with actual SSE endpoint
-$client = Client::withSse($endpoint, $logger);
+$client = Client::withSse(
+    $endpoint,
+    $logger,
+    headers: ['Authorization' => 'Bearer your-token']
+);
 
 $client->connect(function($initResponse) use ($logger) {
     $logger->info('Connected to server', [

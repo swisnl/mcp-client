@@ -23,7 +23,11 @@ $logger = new ConsoleLogger();
 
 // Create client with Streamable HTTP transporter and the logger
 $endpoint = 'http://localhost:3000/mcp'; // Replace with actual SSE endpoint
-$client = Client::withStreamableHttp($endpoint, $logger);
+$client = Client::withStreamableHttp(
+    $endpoint,
+    $logger,
+    headers: ['Authorization' => 'Bearer your-token']
+);
 
 $client->connect(function($initResponse) use ($logger) {
     $logger->info('Connected to server', [
