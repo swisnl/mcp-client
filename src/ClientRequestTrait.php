@@ -4,7 +4,7 @@ namespace Swis\McpClient;
 
 use function React\Async\await;
 
-use React\Promise\Deferred;
+use React\Promise\PromiseInterface;
 use Swis\McpClient\Exceptions\ConnectionAbortedEarlyException;
 use Swis\McpClient\Requests\CallToolRequest;
 use Swis\McpClient\Requests\CompleteRequest;
@@ -44,12 +44,7 @@ trait ClientRequestTrait
      */
     public function complete(CompleteRequest $request): CompleteResult|JsonRpcError
     {
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-
-        return $this->await($deferred);
+        return $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -60,12 +55,7 @@ trait ClientRequestTrait
      */
     public function callTool(CallToolRequest $request): CallToolResult|JsonRpcError
     {
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-
-        return $this->await($deferred);
+        return $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -76,12 +66,7 @@ trait ClientRequestTrait
      */
     public function getPrompt(GetPromptRequest $request): GetPromptResult|JsonRpcError
     {
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-
-        return $this->await($deferred);
+        return $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -94,12 +79,7 @@ trait ClientRequestTrait
     {
         $request = $request ?? new ListPromptsRequest();
 
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-
-        return $this->await($deferred);
+        return $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -112,12 +92,7 @@ trait ClientRequestTrait
     {
         $request = $request ?? new ListResourcesRequest();
 
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-
-        return $this->await($deferred);
+        return $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -130,12 +105,7 @@ trait ClientRequestTrait
     {
         $request = $request ?? new ListResourceTemplatesRequest();
 
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-
-        return $this->await($deferred);
+        return $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -148,12 +118,7 @@ trait ClientRequestTrait
     {
         $request = $request ?? new ListToolsRequest();
 
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-
-        return $this->await($deferred);
+        return $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -165,27 +130,24 @@ trait ClientRequestTrait
     public function ping(?PingRequest $request = null): bool|JsonRpcError
     {
         $request = $request ?? new PingRequest();
+        $result = $this->await($this->sendRequestAsync($request));
 
-        $deferred = new Deferred();
-        $this->sendRequest($request)->then(fn ($response) => $deferred->resolve($response['id'] === $request->getId()));
+        if ($result instanceof JsonRpcError) {
+            return $result;
+        }
 
-        return $this->await($deferred);
+        return (bool) $result;
     }
 
     /**
      * Read a resource
      *
      * @param ReadResourceRequest $request The read resource request
-     * @return ReadResourceResult
+     * @return ReadResourceResult|JsonRpcError
      */
     public function readResource(ReadResourceRequest $request): ReadResourceResult|JsonRpcError
     {
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-
-        return $this->await($deferred);
+        return $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -196,11 +158,7 @@ trait ClientRequestTrait
      */
     public function setLevel(SetLevelRequest $request): void
     {
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-        $this->await($deferred);
+        $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -211,11 +169,7 @@ trait ClientRequestTrait
      */
     public function subscribe(SubscribeRequest $request): void
     {
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-        $this->await($deferred);
+        $this->await($this->sendRequestAsync($request));
     }
 
     /**
@@ -226,17 +180,13 @@ trait ClientRequestTrait
      */
     public function unsubscribe(UnsubscribeRequest $request): void
     {
-        $deferred = new Deferred();
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
-        $this->await($deferred);
+        $this->await($this->sendRequestAsync($request));
     }
 
-    protected function await(Deferred $deferred): mixed
+    protected function await(PromiseInterface $promise): mixed
     {
         try {
-            return await($deferred->promise());
+            return await($promise);
         } catch (\AssertionError $e) {
             if (str_contains($e->getMessage(), 'is_callable($ret)')) {
                 if ($this->transporter instanceof StdioTransporter) {
@@ -256,8 +206,6 @@ trait ClientRequestTrait
                 throw new ConnectionAbortedEarlyException('Connection aborted early. Check your MCP server URL and settings.', 0, $e);
             }
 
-            throw $e;
-        } catch (\Throwable $e) {
             throw $e;
         }
     }

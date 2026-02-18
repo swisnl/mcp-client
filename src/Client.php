@@ -4,16 +4,12 @@ namespace Swis\McpClient;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-
-use function React\Async\await;
-
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 use Swis\McpClient\Factories\ProcessFactory;
 use Swis\McpClient\Requests\RequestInterface;
-use Swis\McpClient\Results\ResultInterface;
 use Swis\McpClient\Transporters\SseTransporter;
 use Swis\McpClient\Transporters\StdioTransporter;
 use Swis\McpClient\Transporters\StreamableHttpTransporter;
@@ -26,14 +22,24 @@ class Client
     use ClientRequestTrait;
 
     /**
-     * @var array<string, callable> Response handlers indexed by request ID
+     * @var array<string, callable> Response callbacks indexed by request ID
      */
-    protected array $responseHandlers = [];
+    protected array $responseCallbacks = [];
 
     /**
      * @var array<string, RequestInterface> Sent requests indexed by request ID
      */
     protected array $sentRequests = [];
+
+    /**
+     * @var array<string, Deferred> Pending requests indexed by request ID
+     */
+    protected array $pending = [];
+
+    /**
+     * @var array<string, PromiseInterface> In-flight transport promises indexed by request ID
+     */
+    protected array $inFlight = [];
 
     /**
      * @var array<string, bool|float|int|string> Client capabilities
@@ -168,9 +174,15 @@ class Client
      */
     public function disconnect(): void
     {
+        foreach ($this->pending as $requestId => $deferred) {
+            $deferred->reject(new \RuntimeException("Connection closed before response was received for request ID [$requestId]."));
+        }
+
         $this->transporter->disconnect();
 
-        $this->responseHandlers = [];
+        $this->responseCallbacks = [];
+        $this->pending = [];
+        $this->inFlight = [];
         $this->sentRequests = [];
         $this->transporter->clearRequestMap();
 
@@ -187,17 +199,31 @@ class Client
      */
     public function sendRequest(RequestInterface $request, ?callable $callback = null): PromiseInterface
     {
-        $requestId = $request->getId();
+        $requestId = (string) $request->getId();
 
         // Register the response handler if provided
         if ($callback !== null) {
-            $this->responseHandlers[$requestId] = $callback;
+            $this->responseCallbacks[$requestId] = $callback;
         }
 
         // Store the request for later result mapping
         $this->sentRequests[$requestId] = $request;
+        $this->inFlight[$requestId] = $this->transporter->sendRequest($request);
 
-        return $this->transporter->sendRequest($request);
+        return $this->inFlight[$requestId]->then(
+            function ($result) use ($requestId) {
+                if (! isset($this->pending[$requestId]) && ! isset($this->responseCallbacks[$requestId])) {
+                    $this->cleanupRequestState($requestId);
+                }
+
+                return $result;
+            },
+            function (\Throwable $e) use ($requestId) {
+                $this->rejectPendingRequest($requestId, $e);
+
+                throw $e;
+            }
+        );
     }
 
     /**
@@ -205,15 +231,25 @@ class Client
      * The promise will resolve when the server sends a response.
      *
      * @param RequestInterface $request The request to send
-     * @return PromiseInterface<ResultInterface> A promise that resolves when the server sends a response
+     * @return PromiseInterface<mixed> A promise that resolves when the server sends a response
      */
     public function sendRequestAsync(RequestInterface $request): PromiseInterface
     {
-        $deferred = new Deferred();
+        $requestId = (string) $request->getId();
 
-        $this->sendRequest($request, function ($response) use ($deferred) {
-            $deferred->resolve($response);
-        });
+        if (isset($this->pending[$requestId]) || isset($this->inFlight[$requestId])) {
+            $deferred = new Deferred();
+            $deferred->reject(new \RuntimeException("Request with ID [$requestId] is already in progress."));
+
+            return $deferred->promise();
+        }
+
+        $deferred = new Deferred();
+        $this->pending[$requestId] = $deferred;
+
+        // Rejection is bridged into $this->pending[$requestId] in sendRequest().
+        // Attach a noop rejection handler to avoid unhandled rejection warnings for this internal promise chain.
+        $this->sendRequest($request)->then(null, static function (): void {});
 
         return $deferred->promise();
     }
@@ -234,26 +270,50 @@ class Client
             return;
         }
 
-        $requestId = $response['id'];
+        $requestId = (string) $response['id'];
 
-        // Check if we have a handler for this request ID
-        if (! isset($this->responseHandlers[$requestId])) {
-            $this->logger?->debug('Received response with no handler', ['response' => $response]);
+        $hasPendingRequest = isset($this->pending[$requestId]);
+        $hasCallback = isset($this->responseCallbacks[$requestId]);
+
+        if (! $hasPendingRequest && ! $hasCallback) {
+            $this->logger?->debug('Received response with no pending request', ['response' => $response]);
 
             return;
         }
 
-        $handler = $this->responseHandlers[$requestId];
-
         // Use the result object if available, otherwise use the raw result data
-        if ($event->hasResult()) {
-            $handler($event->getResult());
-        } else {
-            $handler($response['result'] ?? null);
+        $result = $event->hasResult()
+            ? $event->getResult()
+            : ($response['result'] ?? null);
+
+        if ($hasPendingRequest) {
+            $this->pending[$requestId]->resolve($result);
         }
 
-        // TODO Check if it's a one-time handler and remove it
-        // unset($this->responseHandlers[$requestId]);
+        if ($hasCallback) {
+            $this->responseCallbacks[$requestId]($result);
+        }
+
+        $this->cleanupRequestState($requestId);
+    }
+
+    private function rejectPendingRequest(string $requestId, \Throwable $exception): void
+    {
+        if (isset($this->pending[$requestId])) {
+            $this->pending[$requestId]->reject($exception);
+        }
+
+        $this->cleanupRequestState($requestId);
+    }
+
+    private function cleanupRequestState(string $requestId): void
+    {
+        unset(
+            $this->pending[$requestId],
+            $this->inFlight[$requestId],
+            $this->responseCallbacks[$requestId],
+            $this->sentRequests[$requestId]
+        );
     }
 
     /**
