@@ -1,0 +1,43 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Swis\\McpClient\\Client\:\:await\(\) has parameter \$promise with generic interface React\\Promise\\PromiseInterface but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Client.php
+
+		-
+			message: '#^Method Swis\\McpClient\\Client\:\:ping\(\) should return Swis\\McpClient\\Results\\JsonRpcError\|true but returns bool\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Client.php
+
+		-
+			message: '#^Property Swis\\McpClient\\Client\:\:\$inFlight with generic interface React\\Promise\\PromiseInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Client.php
+
+		-
+			message: '#^Property Swis\\McpClient\\Client\:\:\$pending with generic class React\\Promise\\Deferred does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Client.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Transporters/StreamableHttpTransporter.php
+
+		-
+			message: '#^Method Swis\\McpClient\\Transporters\\StreamableHttpTransporter\:\:handleEventStreamResponse\(\) return type with generic interface React\\Promise\\PromiseInterface does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Transporters/StreamableHttpTransporter.php
+
+		-
+			message: '#^Parameter \#1 \$onFulfilled of method React\\Promise\\PromiseInterface\<mixed\>\:\:then\(\) expects \(callable\(mixed\)\: mixed\)\|null, Closure\(Psr\\Http\\Message\\ResponseInterface\)\: \(Psr\\Http\\Message\\ResponseInterface\|React\\Promise\\PromiseInterface\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Transporters/StreamableHttpTransporter.php
