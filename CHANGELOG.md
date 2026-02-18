@@ -2,6 +2,14 @@
 
 All notable changes to `mcp-client` will be documented in this file.
 
+## 0.6.0 - 2026-02-18
+
+### What's Changed
+
+* Fix Streamable HTTP response dispatch and request awaiting lifecycle by @jormeijer in https://github.com/swisnl/mcp-client/pull/17
+
+**Full Changelog**: https://github.com/swisnl/mcp-client/compare/0.5.1...0.6.0
+
 ## 0.5.1 - 2026-02-17
 
 ### What's Changed
