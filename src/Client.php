@@ -249,7 +249,8 @@ class Client
 
         // Rejection is bridged into $this->pending[$requestId] in sendRequest().
         // Attach a noop rejection handler to avoid unhandled rejection warnings for this internal promise chain.
-        $this->sendRequest($request)->then(null, static function (): void {});
+        $this->sendRequest($request)->then(null, static function (): void {
+        });
 
         return $deferred->promise();
     }
