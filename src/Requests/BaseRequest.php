@@ -98,11 +98,11 @@ abstract class BaseRequest implements RequestInterface
             'method' => $this->getMethod(),
         ];
 
-        $params = $this->toArray();
-
-        if (isset($this->meta)) {
+        if (! empty($this->meta)) {
             $params['_meta'] = $this->meta;
         }
+
+        $params = $this->toArray();
 
         if (! empty($params)) {
             $data['params'] = $params;
