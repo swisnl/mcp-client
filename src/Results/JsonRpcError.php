@@ -87,6 +87,11 @@ class JsonRpcError extends BaseResult
      */
     public static function fromArray(array $data, string $requestId): self
     {
+        if (isset($data['data'])) {
+            /** @phpstan-ignore-next-line  */
+            $data['data'] = is_array($data['data']) ? $data['data'] : [$data['data']];
+        }
+
         return new self(
             $requestId,
             $data['code'],
