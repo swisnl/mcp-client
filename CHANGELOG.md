@@ -2,6 +2,13 @@
 
 All notable changes to `mcp-client` will be documented in this file.
 
+## 0.6.1 - 2026-02-19
+
+**Full Changelog**: https://github.com/swisnl/mcp-client/compare/0.6.0...0.6.1
+
+- Fix: Empty `_metadata` is not allowed, do not send Metadata when empty joris A minute ago
+- Fix: `data` returned within a JsonRpc Error is not always an array, cast to array joris 5 minutes ago
+
 ## 0.6.0 - 2026-02-18
 
 ### What's Changed
