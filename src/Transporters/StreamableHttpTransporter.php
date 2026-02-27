@@ -88,7 +88,7 @@ class StreamableHttpTransporter extends SseTransporter
 
                 return match ($contentType) {
                     'text/event-stream' => $this->handleEventStreamResponse($requestId, $response),
-                    'application/json' => $this->handleJsonResponse($requestId, $response),
+                    'application/json' => $this->handleJsonResponseAsync($requestId, $response),
                     default => throw new \RuntimeException('Unexpected Content-Type: ' . $response->getHeaderLine('Content-Type')),
                 };
             });
@@ -106,11 +106,44 @@ class StreamableHttpTransporter extends SseTransporter
         parent::disconnect();
     }
 
-    protected function handleJsonResponse(string $requestId, ResponseInterface $response): ResponseInterface
+    /**
+     * Handle application/json response. Buffers the body stream when needed (React requestStreaming()
+     * returns HttpBodyStream whose __toString() is empty); then decode and dispatch.
+     */
+    protected function handleJsonResponseAsync(string $requestId, ResponseInterface $response): PromiseInterface
     {
-        $payload = (string) $response->getBody();
+        $body = $response->getBody();
+
+        if ($body instanceof ReadableStreamInterface) {
+            $deferred = new Deferred();
+            $buffer = '';
+            $body->on('data', function (string $chunk) use (&$buffer): void {
+                $buffer .= $chunk;
+            });
+            $body->on('end', function () use ($deferred, &$buffer): void {
+                $deferred->resolve($buffer);
+            });
+            $body->on('error', function (\Throwable $e) use ($deferred): void {
+                $deferred->reject($e);
+            });
+
+            return $deferred->promise()->then(function (string $payload) use ($requestId, $response): ResponseInterface {
+                return $this->handleJsonResponseWithPayload($requestId, $response, $payload);
+            });
+        }
+
+        $payload = (string) $body;
+
+        return \React\Promise\resolve($this->handleJsonResponseWithPayload($requestId, $response, $payload));
+    }
+
+    protected function handleJsonResponseWithPayload(string $requestId, ResponseInterface $response, string $payload): ResponseInterface
+    {
         if ($payload === '') {
-            return $response;
+            throw new \RuntimeException(
+                'MCP server returned Content-Type: application/json but an empty response body. '
+                . 'When using JSON response mode, the server must send the JSON-RPC response (id + result/error) in the POST body.'
+            );
         }
 
         try {
