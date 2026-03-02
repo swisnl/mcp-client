@@ -9,11 +9,13 @@ use function React\Async\await;
 
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
+
+use function React\Promise\resolve;
+
 use React\Stream\ReadableStreamInterface;
 use Swis\McpClient\Exceptions\ConnectionFailedException;
 use Swis\McpClient\Requests\InitializeRequest;
 use Swis\McpClient\Requests\RequestInterface;
-use function React\Promise\resolve;
 
 /**
  * StreamableHttpTransporter that extends SseTransporter for the MCP version 2025-03-26.
