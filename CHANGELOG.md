@@ -2,6 +2,18 @@
 
 All notable changes to `mcp-client` will be documented in this file.
 
+## 0.7.0 - 2026-03-02
+
+### What's Changed
+
+* Support streamed JSON body in StreamableHttpTransporter by @ATLCTO in https://github.com/swisnl/mcp-client/pull/19
+
+### New Contributors
+
+* @ATLCTO made their first contribution in https://github.com/swisnl/mcp-client/pull/19
+
+**Full Changelog**: https://github.com/swisnl/mcp-client/compare/0.6.1...0.7.0
+
 ## 0.6.1 - 2026-02-19
 
 **Full Changelog**: https://github.com/swisnl/mcp-client/compare/0.6.0...0.6.1
