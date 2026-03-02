@@ -117,14 +117,31 @@ class StreamableHttpTransporter extends SseTransporter
         if ($body instanceof ReadableStreamInterface) {
             $deferred = new Deferred();
             $buffer = '';
+            $settled = false;
+
             $body->on('data', function (string $chunk) use (&$buffer): void {
                 $buffer .= $chunk;
             });
-            $body->on('end', function () use ($deferred, &$buffer): void {
+            $body->on('end', function () use ($deferred, &$buffer, &$settled): void {
+                if ($settled) {
+                    return;
+                }
+                $settled = true;
                 $deferred->resolve($buffer);
             });
-            $body->on('error', function (\Throwable $e) use ($deferred): void {
+            $body->on('error', function (\Throwable $e) use ($deferred, &$settled): void {
+                if ($settled) {
+                    return;
+                }
+                $settled = true;
                 $deferred->reject($e);
+            });
+            $body->on('close', function () use ($deferred, &$settled): void {
+                if ($settled) {
+                    return;
+                }
+                $settled = true;
+                $deferred->reject(new \RuntimeException('Stream closed before completion'));
             });
 
             return $deferred->promise()->then(function (string $payload) use ($requestId, $response): ResponseInterface {
