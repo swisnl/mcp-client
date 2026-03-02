@@ -13,6 +13,7 @@ use React\Stream\ReadableStreamInterface;
 use Swis\McpClient\Exceptions\ConnectionFailedException;
 use Swis\McpClient\Requests\InitializeRequest;
 use Swis\McpClient\Requests\RequestInterface;
+use function React\Promise\resolve;
 
 /**
  * StreamableHttpTransporter that extends SseTransporter for the MCP version 2025-03-26.
@@ -151,7 +152,7 @@ class StreamableHttpTransporter extends SseTransporter
 
         $payload = (string) $body;
 
-        return \React\Promise\resolve($this->handleJsonResponseWithPayload($requestId, $response, $payload));
+        return resolve($this->handleJsonResponseWithPayload($requestId, $response, $payload));
     }
 
     protected function handleJsonResponseWithPayload(string $requestId, ResponseInterface $response, string $payload): ResponseInterface
