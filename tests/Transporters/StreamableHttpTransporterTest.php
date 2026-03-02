@@ -5,19 +5,21 @@ namespace Swis\McpClient\Tests\Transporters;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
+
+use function React\Async\await;
+
 use React\EventLoop\Loop;
 use React\Http\Message\Response;
 use React\Promise\PromiseInterface;
 
-use function React\Async\await;
 use function React\Promise\resolve;
 
+use React\Stream\ThroughStream;
 use Swis\McpClient\EventDispatcher;
 use Swis\McpClient\Requests\InitializeRequest;
 use Swis\McpClient\Requests\PingRequest;
 use Swis\McpClient\Requests\RequestInterface;
 use Swis\McpClient\ResponseEvent;
-use React\Stream\ThroughStream;
 use Swis\McpClient\Transporters\StreamableHttpTransporter;
 
 class StreamableHttpTransporterTest extends TestCase
